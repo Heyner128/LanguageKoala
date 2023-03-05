@@ -18,7 +18,7 @@ model User {
   name      String?
   email     String?
   documentId Int?
-  subscription Subscription?
+  subscriptions Subscription[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -27,6 +27,7 @@ model Subscription {
   id        Int      @default(autoincrement()) @id
   userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id])
+  groupId   String
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

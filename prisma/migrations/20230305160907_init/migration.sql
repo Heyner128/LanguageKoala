@@ -15,6 +15,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Subscription" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
+    "groupId" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
