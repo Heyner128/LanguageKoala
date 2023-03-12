@@ -14,10 +14,11 @@ datasource db {
 
 model User {
   id        Int      @default(autoincrement()) @id
-  telegramId     String   @unique
+  telegramId     Int   @unique
   name      String?
   email     String?
   documentId Int?
+  isAdmin  Boolean  @default(false)
   subscriptions Subscription[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,10 +26,20 @@ model User {
 
 model Subscription {
   id        Int      @default(autoincrement()) @id
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id])
-  groupId   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [telegramId])
+  groupId   Int
+  group     Group    @relation(fields: [groupId], references: [telegramId])
   expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Group {
+  id        Int      @default(autoincrement()) @id
+  telegramId     Int   @unique
+  name      String  @unique
+  subscriptions Subscription[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
