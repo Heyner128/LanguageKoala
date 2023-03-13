@@ -27,4 +27,18 @@ async function userHasActiveSubscription(
   return firstSubscription !== null;
 }
 
-export default { getUserById, userHasActiveSubscription };
+async function getSubscriptionsByUserId(
+  userId: number
+): Promise<Subscription[]> {
+  return Server.database.subscription.findMany({
+    where: {
+      userId,
+    },
+  });
+}
+
+export default {
+  getUserById,
+  userHasActiveSubscription,
+  getSubscriptionsByUserId,
+};

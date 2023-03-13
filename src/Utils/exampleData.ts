@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 
 export const exampleUsers = [
   {
-    telegramId: 123456,
-    documentId: 20722045,
+    telegramId: 1034422787,
+    documentId: 1019118056,
     email: 'heyner128@gmail.com',
     name: 'Heyner',
     subscriptions: [
@@ -12,6 +12,7 @@ export const exampleUsers = [
         groupId: 123456,
       },
     ],
+    isAdmin: true,
   },
 ];
 

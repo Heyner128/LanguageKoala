@@ -10,7 +10,7 @@
     "start:dev": "nodemon --exec ts-node --esm src/main.ts",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --ext .ts src --fix",
-    "prisma:push": "prisma db push ./src/schema.prisma"
+    "prisma:push": "prisma db push --schema ./src/Models/schema.prisma"
   },
   "keywords": [],
   "author": "",

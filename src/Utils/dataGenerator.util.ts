@@ -1,8 +1,10 @@
 import { Prisma } from '@prisma/client';
 import Server from '../server';
 
-function createUsers(exampleUsers: Prisma.UserCreateManyInput[]): void {
-  Server.database.user.createMany({
+async function createUsers(
+  exampleUsers: Prisma.UserCreateManyInput[]
+): Promise<void> {
+  await Server.database.user.createMany({
     data: exampleUsers.map((user) => ({
       telegramId: user.telegramId,
       documentId: user.documentId,
@@ -12,8 +14,10 @@ function createUsers(exampleUsers: Prisma.UserCreateManyInput[]): void {
   });
 }
 
-function createGroups(exampleGroups: Prisma.GroupCreateManyInput[]): void {
-  Server.database.group.createMany({
+async function createGroups(
+  exampleGroups: Prisma.GroupCreateManyInput[]
+): Promise<void> {
+  await Server.database.group.createMany({
     data: exampleGroups.map((group) => ({
       telegramId: group.telegramId,
       name: group.name,
@@ -21,10 +25,10 @@ function createGroups(exampleGroups: Prisma.GroupCreateManyInput[]): void {
   });
 }
 
-function createSubscriptions(
+async function createSubscriptions(
   exampleSubscriptions: Prisma.SubscriptionCreateManyInput[]
-): void {
-  Server.database.subscription.createMany({
+): Promise<void> {
+  await Server.database.subscription.createMany({
     data: exampleSubscriptions.map((subscription) => ({
       userId: subscription.userId,
       groupId: subscription.groupId,
@@ -33,20 +37,20 @@ function createSubscriptions(
   });
 }
 
-function resetDatabase() {
-  Server.database.user.deleteMany();
-  Server.database.group.deleteMany();
-  Server.database.subscription.deleteMany();
+async function resetDatabase(): Promise<void> {
+  await Server.database.user.deleteMany();
+  await Server.database.group.deleteMany();
+  await Server.database.subscription.deleteMany();
 }
 
-function createData(
+async function createData(
   exampleUsers: Prisma.UserCreateManyInput[],
   exampleGroups: Prisma.GroupCreateManyInput[],
   exampleSubscriptions: Prisma.SubscriptionCreateManyInput[]
-) {
-  createUsers(exampleUsers);
-  createGroups(exampleGroups);
-  createSubscriptions(exampleSubscriptions);
+): Promise<void> {
+  await createUsers(exampleUsers);
+  await createGroups(exampleGroups);
+  await createSubscriptions(exampleSubscriptions);
 }
 
 export default { createData, resetDatabase };

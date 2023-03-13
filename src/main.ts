@@ -10,8 +10,12 @@ import App from './App';
 dotenv.config();
 
 // creates mock-up data
-DataGenerator.resetDatabase();
-DataGenerator.createData(exampleUsers, exampleGroups, exampleSubscriptions);
+await DataGenerator.resetDatabase();
+await DataGenerator.createData(
+  exampleUsers,
+  exampleGroups,
+  exampleSubscriptions
+);
 
 // starts the app
 App.start();

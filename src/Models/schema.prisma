@@ -27,9 +27,9 @@ model User {
 model Subscription {
   id        Int      @default(autoincrement()) @id
   userId    Int
-  user      User     @relation(fields: [userId], references: [telegramId])
+  user      User     @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
   groupId   Int
-  group     Group    @relation(fields: [groupId], references: [telegramId])
+  group     Group    @relation(fields: [groupId], references: [telegramId], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
