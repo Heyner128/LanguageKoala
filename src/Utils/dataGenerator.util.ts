@@ -10,6 +10,7 @@ async function createUsers(
       documentId: user.documentId,
       email: user.email,
       name: user.name,
+      isAdmin: user.isAdmin,
     })),
   });
 }
@@ -38,9 +39,9 @@ async function createSubscriptions(
 }
 
 async function resetDatabase(): Promise<void> {
-  await Server.database.user.deleteMany();
-  await Server.database.group.deleteMany();
   await Server.database.subscription.deleteMany();
+  await Server.database.group.deleteMany();
+  await Server.database.user.deleteMany();
 }
 
 async function createData(
