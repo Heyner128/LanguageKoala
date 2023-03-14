@@ -27,9 +27,9 @@ model User {
 model Subscription {
   id        Int      @default(autoincrement()) @id
   userId    Int
-  user      User     @relation(fields: [userId], references: [telegramId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [telegramId], onDelete: NoAction)
   groupId   Int
-  group     Group    @relation(fields: [groupId], references: [telegramId], onDelete: Cascade)
+  group     Group    @relation(fields: [groupId], references: [telegramId], onDelete: NoAction)
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -40,6 +40,16 @@ model Group {
   telegramId     Int   @unique
   name      String  @unique
   subscriptions Subscription[]
+  tokens    Token[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Token {
+  id        Int      @default(autoincrement()) @id
+  token     String   @unique
+  groupId   Int
+  group     Group    @relation(fields: [groupId], references: [telegramId], onDelete: NoAction)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
