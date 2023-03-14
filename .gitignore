@@ -104,5 +104,5 @@ dist
 .tern-port
 
 #IDEs
-.vscode
-.idea
+.vscode/
+.idea/
