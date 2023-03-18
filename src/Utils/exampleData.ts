@@ -1,17 +1,9 @@
-import dayjs from 'dayjs';
-
 export const exampleUsers = [
   {
     telegramId: 1034422787,
     documentId: 1019118056,
     email: 'heyner128@gmail.com',
     name: 'Heyner',
-    subscriptions: [
-      {
-        expiresAt: dayjs().add(1, 'month').toDate(),
-        groupId: 123456,
-      },
-    ],
     isAdmin: true,
   },
 ];
@@ -23,10 +15,10 @@ export const exampleGroups = [
   },
 ];
 
-export const exampleSubscriptions = exampleUsers.flatMap((user) =>
-  user.subscriptions.map((subscription) => ({
-    userId: user.telegramId,
-    groupId: subscription.groupId,
-    expiresAt: subscription.expiresAt,
-  }))
-);
+export const exampleTokens = [
+  {
+    token: 'abcdefg',
+    groupId: 123456,
+    subscriptionDurationInDays: 30,
+  },
+];

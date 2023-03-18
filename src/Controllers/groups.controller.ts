@@ -1,5 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import UsersService from '../Services/users.service';
+import SubscriptionsService from '../Services/subscriptions.service';
 import HelperFunctions from '../Utils/helperFunctions.util';
 import Server from '../server';
 
@@ -7,10 +8,11 @@ function newMembers(msg: TelegramBot.Message) {
   if (msg && msg.new_chat_members) {
     msg.new_chat_members.forEach(async (newMember) => {
       const user = await UsersService.getUserById(newMember.id);
-      const hasSubscription = await UsersService.userHasActiveSubscription(
-        newMember.id,
-        msg.chat.id
-      );
+      const hasSubscription =
+        await SubscriptionsService.userHasActiveSubscription(
+          newMember.id,
+          msg.chat.id
+        );
 
       if (user && hasSubscription) {
         await Server.chatBot.sendMessage(
@@ -42,7 +44,7 @@ function newMembers(msg: TelegramBot.Message) {
         );
         await HelperFunctions.delay(2 * 60 * 1000);
         if (
-          await UsersService.userHasActiveSubscription(
+          await SubscriptionsService.userHasActiveSubscription(
             newMember.id,
             msg.chat.id
           )

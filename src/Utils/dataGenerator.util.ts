@@ -26,19 +26,20 @@ async function createGroups(
   });
 }
 
-async function createSubscriptions(
-  exampleSubscriptions: Prisma.SubscriptionCreateManyInput[]
+async function createTokens(
+  exampleTokens: Prisma.TokenCreateManyInput[]
 ): Promise<void> {
-  await Server.database.subscription.createMany({
-    data: exampleSubscriptions.map((subscription) => ({
-      userId: subscription.userId,
-      groupId: subscription.groupId,
-      expiresAt: subscription.expiresAt,
+  await Server.database.token.createMany({
+    data: exampleTokens.map((token) => ({
+      token: token.token,
+      groupId: token.groupId,
+      subscriptionDurationInDays: token.subscriptionDurationInDays,
     })),
   });
 }
 
 async function resetDatabase(): Promise<void> {
+  await Server.database.token.deleteMany();
   await Server.database.subscription.deleteMany();
   await Server.database.group.deleteMany();
   await Server.database.user.deleteMany();
@@ -47,11 +48,11 @@ async function resetDatabase(): Promise<void> {
 async function createData(
   exampleUsers: Prisma.UserCreateManyInput[],
   exampleGroups: Prisma.GroupCreateManyInput[],
-  exampleSubscriptions: Prisma.SubscriptionCreateManyInput[]
+  exampleTokens: Prisma.TokenCreateManyInput[]
 ): Promise<void> {
   await createUsers(exampleUsers);
   await createGroups(exampleGroups);
-  await createSubscriptions(exampleSubscriptions);
+  await createTokens(exampleTokens);
 }
 
 export default { createData, resetDatabase };
