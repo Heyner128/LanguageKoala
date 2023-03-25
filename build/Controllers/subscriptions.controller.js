@@ -1,0 +1,37 @@
+import dayjs from 'dayjs';
+import Server from '../server';
+import GroupsService from '../Services/groups.service';
+import SubscriptionsService from '../Services/subscriptions.service';
+async function parseSubscription(subscription) {
+    let status;
+    if (dayjs(subscription.expiresAt).isAfter(new Date())) {
+        status = 'Activa';
+    }
+    else {
+        status = 'Expirada';
+    }
+    return `
+    Grupo: ${(await GroupsService.getGroupById(subscription.groupId))?.name}
+    Valida hasta: ${dayjs(subscription.expiresAt).format('DD/MM/YYYY')}
+    Estado: ${status}
+  `;
+}
+async function sendUserSubscriptions(msg) {
+    const userId = msg.chat?.id;
+    if (userId) {
+        const subscriptions = await SubscriptionsService.getSubscriptionsByUserId(BigInt(userId));
+        const parsedSubscriptions = await Promise.all(subscriptions.map((subscription) => parseSubscription(subscription)));
+        const messageText = subscriptions.length > 0
+            ? `
+      Estas son tus subscripciones:
+      ${parsedSubscriptions.join('\n')}
+      `
+            : 'No tienes subscripciones activas';
+        Server.logger.info(`User ${userId} requested his subscriptions`);
+        return Server.chatBot.sendMessage(userId, messageText);
+    }
+    const error = new Error('Error getting message informations from telegram API');
+    Server.logger.error(error);
+    throw error;
+}
+export default { sendUserSubscriptions };
