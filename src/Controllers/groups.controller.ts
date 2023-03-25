@@ -1,5 +1,4 @@
 import TelegramBot from 'node-telegram-bot-api';
-import UsersService from '../Services/users.service';
 import SubscriptionsService from '../Services/subscriptions.service';
 import GroupsService from '../Services/groups.service';
 import {
@@ -95,41 +94,32 @@ function newMembers(msg: TelegramBot.Message) {
   ) {
     msg.new_chat_members.forEach(async (newMember) => {
       try {
-        const user = await UsersService.getUserById(newMember.id);
         const hasSubscription =
           await SubscriptionsService.userHasActiveSubscription(
             BigInt(newMember.id),
             BigInt(msg.chat.id)
           );
 
-        if (user && hasSubscription) {
+        if (hasSubscription) {
           await Server.chatBot.sendMessage(
             msg.chat.id,
-            `Bienvenido ${user.name}!`
-          );
-
-          Server.logger.info(`User ${user.name} joined group ${msg.chat.id}`);
-        } else if (!user) {
-          await Server.chatBot.banChatMember(msg.chat.id, String(newMember.id));
-          await Server.chatBot.sendMessage(
-            msg.chat.id,
-            `${newMember.first_name} baneado! Razon: No esta registrado en el sistema.`
+            `Bienvenido ${newMember.first_name}!`
           );
 
           Server.logger.info(
-            `User ${newMember.first_name} banned from group ${msg.chat.id}`
+            `User ${newMember.first_name} joined group ${msg.chat.id}`
           );
-        } else if (!hasSubscription) {
+        } else if (!hasSubscription && !newMember.is_bot) {
           await Server.chatBot.sendMessage(
             msg.chat.id,
-            `Bienvenido ${user.name} por favor valida tu suscripción presionando el botón`,
+            `Bienvenido ${newMember.first_name} por favor valida tu suscripción presionando el botón`,
             {
               reply_markup: {
                 inline_keyboard: [
                   [
                     {
                       text: 'Validar suscripción',
-                      url: `https://t.me/${process.env.BOT_USERNAME}?start=${user.documentId}`,
+                      url: `https://t.me/${process.env.BOT_USERNAME}?start`,
                     },
                   ],
                 ],
@@ -138,9 +128,9 @@ function newMembers(msg: TelegramBot.Message) {
           );
 
           Server.logger.info(
-            `User subscription request sent to ${user.name} in group ${msg.chat.id}`
+            `User subscription request sent to ${newMember.first_name} in group ${msg.chat.id}`
           );
-          await HelperFunctions.delay(2 * 60 * 1000);
+          await HelperFunctions.delay(5 * 60 * 1000);
           if (
             await SubscriptionsService.userHasActiveSubscription(
               BigInt(newMember.id),
@@ -148,7 +138,7 @@ function newMembers(msg: TelegramBot.Message) {
             )
           ) {
             Server.logger.info(
-              `The user ${user.name} has a valid subscription to group ${msg.chat.id}`
+              `The user ${newMember.first_name} has a valid subscription to group ${msg.chat.id}`
             );
             return;
           }
@@ -159,7 +149,7 @@ function newMembers(msg: TelegramBot.Message) {
             `${newMember.first_name} Baneado! Razon: No tiene una suscripcion activa.`
           );
           Server.logger.info(
-            `The user ${user.name} has been banned from group ${msg.chat.id} for not having a valid subscription`
+            `The user ${newMember.first_name} has been banned from group ${msg.chat.id} for not having a valid subscription`
           );
         }
       } catch (error) {
