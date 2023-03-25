@@ -44,15 +44,28 @@ async function botMembershipUpdate(
 ) {
   const newStatus = chatMemberUpdate.new_chat_member.status;
   try {
-    if (newStatus === 'administrator') {
+    if (newStatus === 'member') {
+      await Server.chatBot.sendMessage(
+        chatMemberUpdate.chat.id,
+        `
+        Hola! para que pueda funcionar correctamente en este grupo, por favor agregame como administrador.
+      `
+      );
+      Server.logger.info(
+        `Bot added to group as member ${chatMemberUpdate.chat.id}`
+      );
+    } else if (newStatus === 'administrator') {
       await GroupsService.createGroup(
         BigInt(chatMemberUpdate.chat.id),
         chatMemberUpdate.chat.title ?? 'NO_NAME'
       );
-
+      Server.logger.info(
+        `Bot added to group as administrator ${chatMemberUpdate.chat.id}`
+      );
       Server.logger.info(`Group ${chatMemberUpdate.chat.id} created`);
     } else if (newStatus === 'left' || newStatus === 'kicked') {
       await GroupsService.deleteGroup(BigInt(chatMemberUpdate.chat.id));
+      Server.logger.info(`Bot deleted from group ${chatMemberUpdate.chat.id}`);
       Server.logger.info(`Group ${chatMemberUpdate.chat.id} deleted`);
     }
   } catch (error) {
