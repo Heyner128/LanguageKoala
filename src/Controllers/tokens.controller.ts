@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { Message } from 'node-telegram-bot-api';
 import TokensService from '../Services/tokens.service';
 import SubscriptionsService from '../Services/subscriptions.service';
+import UsersService from '../Services/users.service';
 import Server from '../server';
 import {
   FastifyReplyTypebox,
@@ -15,10 +16,16 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
     try {
       const token = await TokensService.redeemToken(msg.text);
       Server.logger.info(
-        `${msg.from?.id ?? 'NO_SENDER_ID'} redeemed token ${msg.text}`
+        `${msg.chat?.id ?? 'NO_SENDER_ID'} redeemed token ${msg.text}`
       );
-      const subscription = await SubscriptionsService.createSubscription(
+
+      const user = await UsersService.createOrUpdateUser(
         BigInt(msg.chat.id),
+        msg.chat.first_name ?? 'NO_NAME'
+      );
+
+      const subscription = await SubscriptionsService.createSubscription(
+        user.telegramId,
         token.groupId,
         dayjs().add(token.subscriptionDurationInDays, 'day').toDate()
       );
