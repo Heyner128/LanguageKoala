@@ -19,7 +19,12 @@ async function createToken(
       },
     });
   } catch (error) {
-    Server.logger.error('Token creation database error', error);
+    Server.logger.error(
+      new Error(`
+      Token creation database error: ${
+        error instanceof Error ? error : 'UNDEFINED'
+      }`)
+    );
     throw new Error('Cannot create token, group not found');
   }
 }
@@ -35,7 +40,12 @@ async function redeemToken(token: string): Promise<Token> {
       },
     });
   } catch (error) {
-    Server.logger.error('Token redemption database error', error);
+    Server.logger.error(
+      new Error(`
+      Token redemption database error: ${
+        error instanceof Error ? error : 'UNDEFINED'
+      }`)
+    );
     throw new Error('Cannot redeem token, not found');
   }
 }

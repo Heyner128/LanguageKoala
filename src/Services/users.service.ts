@@ -9,7 +9,11 @@ async function getUserById(userId: number): Promise<User | null> {
       },
     });
   } catch (error) {
-    Server.logger.error('User get database error', error);
+    Server.logger.error(
+      new Error(
+        `User find error: ${error instanceof Error ? error : 'UNDEFINED'}`
+      )
+    );
     throw new Error('Cannot get user, not found');
   }
 }

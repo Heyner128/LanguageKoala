@@ -24,7 +24,13 @@ async function getGroups(
     );
     reply.status(200).send(groups);
   } catch (error) {
-    Server.logger.error('Error getting groups: ', error);
+    Server.logger.error(
+      new Error(
+        `error getting groups ${
+          error instanceof Error ? error.message : 'UNDEFINED'
+        }`
+      )
+    );
     reply.status(500).send({
       message: `Cannot get groups, Error: ${
         error instanceof Error ? error?.message : String(error)
@@ -50,7 +56,13 @@ async function botMembershipUpdate(
       Server.logger.info(`Group ${chatMemberUpdate.chat.id} deleted`);
     }
   } catch (error) {
-    Server.logger.error('Error updating groups: ', error);
+    Server.logger.error(
+      new Error(`
+      Error updating groups: ${
+        error instanceof Error ? error.message : 'UNDEFINED'
+      }
+    `)
+    );
   }
 }
 
@@ -156,7 +168,11 @@ async function leftMember(msg: TelegramBot.Message) {
         `User ${msg.left_chat_member.id} unbanned from group ${msg.chat.id}`
       );
     } catch (error) {
-      Server.logger.error('Error executing left member flow: ', error);
+      Server.logger.error(
+        `Error executing left member event: ${
+          error instanceof Error ? error.message : 'UNDEFINED'
+        }`
+      );
     }
   }
 }

@@ -23,7 +23,14 @@ async function createSubscription(
       },
     });
   } catch (error) {
-    console.error(error);
+    Server.logger.error(
+      new Error(
+        `Subscription creation database error: ${
+          error instanceof Error ? error : 'UNDEFINED'
+        }
+      `
+      )
+    );
     throw new Error('Cannot create subscription, user or group not found');
   }
 }
@@ -46,7 +53,12 @@ async function userHasActiveSubscription(
 
     return firstSubscription !== null;
   } catch (error) {
-    console.error(error);
+    Server.logger.error(
+      new Error(`Subscription find error: ${
+        error instanceof Error ? error : 'UNDEFINED'
+      }
+      `)
+    );
     throw new Error('Cannot get subscription, user or group not found');
   }
 }
@@ -61,7 +73,12 @@ async function getSubscriptionsByUserId(
       },
     });
   } catch (error) {
-    console.error(error);
+    Server.logger.error(
+      new Error(`Subscription find error: ${
+        error instanceof Error ? error : 'UNDEFINED'
+      }
+      `)
+    );
     throw new Error('Cannot get subscriptions, user not found');
   }
 }

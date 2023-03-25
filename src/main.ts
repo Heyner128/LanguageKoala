@@ -11,7 +11,10 @@ async function start() {
   UsersRouter.init();
   TokensRouter.init();
   Server.chatBot.on('polling_error', (error) => {
-    Server.logger.error('Telegram bot connection error:', error);
+    Server.logger.error(
+      new Error(`
+      Telegram bot polling error: ${error.message}`)
+    );
     process.exit(1);
   });
   try {
@@ -20,7 +23,10 @@ async function start() {
       : 3000;
     await Server.httpServer.listen({ port: PORT });
   } catch (error) {
-    Server.logger.error('Fastify server start error:', error);
+    Server.logger.error(
+      new Error(`
+      Fastify start error: ${error instanceof Error ? error : 'UNDEFINED'}`)
+    );
     process.exit(1);
   }
   Server.logger.info('App started successfully');

@@ -35,7 +35,7 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
         ).format('DD/MM/YYYY')}`
       );
     } catch (error) {
-      Server.logger.error(`Error redeeming token ${msg.text}:`, error);
+      Server.logger.error(new Error(`Error redeeming token ${msg.text}`));
       await Server.chatBot.removeTextListener(/.+/);
       return Server.chatBot.sendMessage(
         msg.chat.id,
@@ -95,7 +95,7 @@ async function createToken(
       `Token ${token.token} created for group ${token.groupId}`
     );
   } catch (error) {
-    Server.logger.error('Error creating token:', error);
+    Server.logger.error(new Error(`Error creating token`));
     reply.status(500).send({
       message: `Cannot create token, Error: ${
         error instanceof Error ? error?.message : String(error)

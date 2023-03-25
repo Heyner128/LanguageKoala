@@ -10,7 +10,13 @@ async function createGroup(telegramId: bigint, name: string): Promise<Group> {
       },
     });
   } catch (error) {
-    Server.logger.error('Group creation database error', error);
+    Server.logger.error(
+      new Error(
+        `Group creation database error: ${
+          error instanceof Error ? error : 'UNDEFINED'
+        }`
+      )
+    );
     throw new Error('Cannot create group, already exists');
   }
 }
@@ -23,7 +29,13 @@ async function deleteGroup(groupId: bigint): Promise<Group> {
       },
     });
   } catch (error) {
-    Server.logger.error('Group deletion database error', error);
+    Server.logger.error(
+      new Error(
+        `Group deletion database error: ${
+          error instanceof Error ? error : 'UNDEFINED'
+        }`
+      )
+    );
     throw new Error('Cannot delete group, not found');
   }
 }
@@ -36,7 +48,13 @@ async function getGroupById(groupId: bigint): Promise<Group | null> {
       },
     });
   } catch (error) {
-    Server.logger.error('Group get database error', error);
+    Server.logger.error(
+      new Error(
+        `Group deletion find error: ${
+          error instanceof Error ? error : 'UNDEFINED'
+        }`
+      )
+    );
     throw new Error('Cannot get group, not found');
   }
 }
