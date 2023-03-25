@@ -59,6 +59,12 @@ async function botMembershipUpdate(
         BigInt(chatMemberUpdate.chat.id),
         chatMemberUpdate.chat.title ?? 'NO_NAME'
       );
+      await Server.chatBot.sendMessage(
+        chatMemberUpdate.chat.id,
+        `
+        Bot activado desde ahora todos los nuevos miembros deben validar su suscripción.
+      `
+      );
       Server.logger.info(
         `Bot added to group as administrator ${chatMemberUpdate.chat.id}`
       );
