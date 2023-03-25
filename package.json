@@ -1,7 +1,5 @@
 {
-  "name": "francestoxicobot",
-  "version": "0.1",
-  "description": "",
+  "private": true,
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -11,7 +9,8 @@
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --ext .ts src --fix",
     "prisma:push": "prisma db push --schema ./src/Models/schema.prisma",
-    "prisma:migrate": "prisma migrate dev --schema ./src/Models/schema.prisma"
+    "prisma:migratedev": "prisma migrate dev --schema ./src/Models/schema.prisma",
+    "prisma:migrate": "prisma migrate deploy --schema ./src/Models/schema.prisma"
   },
   "keywords": [],
   "author": "",
@@ -32,6 +31,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "nodemon": "^2.0.20",
     "prettier": "2.8.3",
+    "prisma": "^4.11.0",
     "rimraf": "^4.1.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.2"
@@ -44,7 +44,6 @@
     "dotenv": "^16.0.3",
     "fastify": "^4.14.1",
     "node-telegram-bot-api": "^0.61.0",
-    "prisma": "^4.11.0",
     "uuid": "^9.0.0",
     "winston": "^3.8.2"
   }
