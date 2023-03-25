@@ -2,53 +2,68 @@ import { Subscription } from '@prisma/client';
 import Server from '../server';
 
 async function createSubscription(
-  userTelegramId: number,
-  groupTelegramId: number,
+  userTelegramId: bigint,
+  groupTelegramId: bigint,
   expiresAt: Date
-): Promise<void> {
-  await Server.database.subscription.create({
-    data: {
-      user: {
-        connect: {
-          telegramId: userTelegramId,
+): Promise<Subscription> {
+  try {
+    return await Server.database.subscription.create({
+      data: {
+        user: {
+          connect: {
+            telegramId: userTelegramId,
+          },
         },
-      },
-      group: {
-        connect: {
-          telegramId: groupTelegramId,
+        group: {
+          connect: {
+            telegramId: groupTelegramId,
+          },
         },
+        expiresAt,
       },
-      expiresAt,
-    },
-  });
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error('Cannot create subscription, user or group not found');
+  }
 }
 
 async function userHasActiveSubscription(
-  userId: number,
-  groupId: number
+  userId: bigint,
+  groupId: bigint
 ): Promise<boolean> {
-  const firstSubscription: Subscription | null =
-    await Server.database.subscription.findFirst({
-      where: {
-        userId,
-        groupId,
-        expiresAt: {
-          gt: new Date(),
+  try {
+    const firstSubscription: Subscription | null =
+      await Server.database.subscription.findFirst({
+        where: {
+          userId,
+          groupId,
+          expiresAt: {
+            gt: new Date(),
+          },
         },
-      },
-    });
+      });
 
-  return firstSubscription !== null;
+    return firstSubscription !== null;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Cannot get subscription, user or group not found');
+  }
 }
 
 async function getSubscriptionsByUserId(
-  userId: number
+  userId: bigint
 ): Promise<Subscription[]> {
-  return Server.database.subscription.findMany({
-    where: {
-      userId,
-    },
-  });
+  try {
+    return await Server.database.subscription.findMany({
+      where: {
+        userId,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error('Cannot get subscriptions, user not found');
+  }
 }
 
 export default {

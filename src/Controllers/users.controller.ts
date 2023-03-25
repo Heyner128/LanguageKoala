@@ -26,6 +26,7 @@ async function start(msg: Message) {
   await Server.chatBot.sendMessage(chatId, message, {
     reply_markup: CommandsUtil.commandsReplyMarkup(commands),
   });
+  Server.logger.info(`Commands sent to user ${chatId}`);
 }
 
 function callbackQuery(msg: CallbackQuery) {

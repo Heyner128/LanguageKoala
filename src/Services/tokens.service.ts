@@ -3,31 +3,41 @@ import Server from '../server';
 
 async function createToken(
   token: string,
-  groupId: number,
+  groupId: bigint,
   subscriptionDurationInDays: number
-): Promise<void> {
-  await Server.database.token.create({
-    data: {
-      token,
-      group: {
-        connect: {
-          telegramId: groupId,
+): Promise<Token> {
+  try {
+    return await Server.database.token.create({
+      data: {
+        token,
+        group: {
+          connect: {
+            telegramId: groupId,
+          },
         },
+        subscriptionDurationInDays,
       },
-      subscriptionDurationInDays,
-    },
-  });
+    });
+  } catch (error) {
+    Server.logger.error('Token creation database error', error);
+    throw new Error('Cannot create token, group not found');
+  }
 }
 
 async function redeemToken(token: string): Promise<Token> {
-  return Server.database.token.update({
-    where: {
-      token,
-    },
-    data: {
-      redeemed: true,
-    },
-  });
+  try {
+    return await Server.database.token.update({
+      where: {
+        token,
+      },
+      data: {
+        redeemed: true,
+      },
+    });
+  } catch (error) {
+    Server.logger.error('Token redemption database error', error);
+    throw new Error('Cannot redeem token, not found');
+  }
 }
 
 export default { createToken, redeemToken };

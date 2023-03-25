@@ -24,7 +24,7 @@ async function sendUserSubscriptions(msg: Message): Promise<Message> {
   const userId = msg.chat?.id;
   if (userId) {
     const subscriptions: Subscription[] =
-      await SubscriptionsService.getSubscriptionsByUserId(userId);
+      await SubscriptionsService.getSubscriptionsByUserId(BigInt(userId));
     const parsedSubscriptions = await Promise.all(
       subscriptions.map((subscription) => parseSubscription(subscription))
     );
@@ -35,9 +35,15 @@ async function sendUserSubscriptions(msg: Message): Promise<Message> {
       ${parsedSubscriptions.join('\n')}
       `
         : 'No tienes subscripciones activas';
+    Server.logger.info(`User ${userId} requested his subscriptions`);
     return Server.chatBot.sendMessage(userId, messageText);
   }
-  throw new Error('No se pudo obtener el id del usuario');
+
+  const error = new Error(
+    'Error getting message informations from telegram API'
+  );
+  Server.logger.error(error);
+  throw error;
 }
 
 export default { sendUserSubscriptions };

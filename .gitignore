@@ -109,4 +109,5 @@ dist
 
 #TS build dir
 build/
+build
 /build/
