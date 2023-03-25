@@ -51,7 +51,7 @@ async function botMembershipUpdate(
       );
 
       Server.logger.info(`Group ${chatMemberUpdate.chat.id} created`);
-    } else if (newStatus === 'left') {
+    } else if (newStatus === 'left' || newStatus === 'kicked') {
       await GroupsService.deleteGroup(BigInt(chatMemberUpdate.chat.id));
       Server.logger.info(`Group ${chatMemberUpdate.chat.id} deleted`);
     }
