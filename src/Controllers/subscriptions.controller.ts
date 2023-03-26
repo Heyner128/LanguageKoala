@@ -20,7 +20,7 @@ async function parseSubscription(subscription: Subscription): Promise<string> {
   `;
 }
 
-async function sendUserSubscriptions(msg: Message): Promise<Message> {
+async function sendUserSubscriptions(msg: Message): Promise<Message | boolean> {
   const userId = msg.chat?.id;
   if (userId) {
     const subscriptions: Subscription[] =
@@ -36,7 +36,10 @@ async function sendUserSubscriptions(msg: Message): Promise<Message> {
       `
         : 'No tienes subscripciones activas';
     Server.logger.info(`User ${userId} requested his subscriptions`);
-    return Server.chatBot.sendMessage(userId, messageText);
+    return Server.chatBot.editMessageText(messageText, {
+      chat_id: msg.chat.id,
+      message_id: msg.message_id,
+    });
   }
 
   const error = new Error(

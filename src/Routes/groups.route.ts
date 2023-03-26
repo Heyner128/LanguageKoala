@@ -1,15 +1,21 @@
 import { GetGroupsSchema, GroupsType } from '../Models/groups.dto';
 import GroupsController from '../Controllers/groups.controller';
 import Server from '../server';
+import HelperFunctions from '../Utils/helperFunctions.util';
+import { ApiHeaders } from '../Utils/types.util';
 
 function init() {
   Server.chatBot.on('my_chat_member', GroupsController.botMembershipUpdate);
   Server.chatBot.on('new_chat_members', GroupsController.newMembers);
   Server.chatBot.on('left_chat_member', GroupsController.leftMember);
-  Server.httpServer.get<{ Reply: GroupsType }>(
+  Server.httpServer.get<{
+    Reply: GroupsType;
+    Headers: ApiHeaders;
+  }>(
     '/groups',
     {
       schema: GetGroupsSchema,
+      preValidation: HelperFunctions.apiKeyPreValidation,
     },
     GroupsController.getGroups
   );

@@ -8,14 +8,20 @@ const commands: Command[] = [
   {
     description: 'Mis subscripciones',
     handler: SubscriptionsController.sendUserSubscriptions,
-    resendCommands: true,
+    resendCommands: 'same',
   },
   {
     description: 'Activar subscripcion',
     handler: TokensController.redeemToken,
-    resendCommands: true,
+    resendCommands: 'back',
   },
 ];
+
+const backCommand: Command = {
+  description: 'Volver',
+  handler: () => Promise.resolve(true),
+  resendCommands: 'same',
+};
 
 async function start(msg: Message) {
   const chatId = msg.chat.id;
@@ -33,9 +39,24 @@ function callbackQuery(msg: CallbackQuery) {
   const command = commands[Number(msg.data)];
   if (command) {
     command.handler(msg.message as Message).then((sentMessage) => {
-      if (command.resendCommands) {
+      if (
+        command.resendCommands === 'same' &&
+        typeof sentMessage !== 'boolean'
+      ) {
         return Server.chatBot.editMessageReplyMarkup(
           CommandsUtil.commandsReplyMarkup(commands),
+          {
+            chat_id: sentMessage.chat.id,
+            message_id: sentMessage.message_id,
+          }
+        );
+      }
+      if (
+        command.resendCommands === 'back' &&
+        typeof sentMessage !== 'boolean'
+      ) {
+        return Server.chatBot.editMessageReplyMarkup(
+          CommandsUtil.commandsReplyMarkup([backCommand]),
           {
             chat_id: sentMessage.chat.id,
             message_id: sentMessage.message_id,

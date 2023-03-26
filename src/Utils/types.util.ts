@@ -33,3 +33,7 @@ export type FastifyReplyTypebox<TSchema extends FastifySchema> = FastifyReply<
   TSchema,
   TypeBoxTypeProvider
 >;
+
+export interface ApiHeaders {
+  'x-api-key': string;
+}
