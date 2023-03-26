@@ -50,7 +50,7 @@ model Token {
   id        Int      @default(autoincrement()) @id
   token     String   @unique
   groupId   BigInt
-  group     Group    @relation(fields: [groupId], references: [telegramId], onDelete: NoAction)
+  group     Group    @relation(fields: [groupId], references: [telegramId], onDelete: Cascade)
   subscriptionDurationInDays Int
   redeemed  Boolean  @default(false)
   createdAt DateTime @default(now())
