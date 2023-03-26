@@ -1,10 +1,7 @@
 import { User } from '@prisma/client';
 import Server from '../server';
 
-async function createOrUpdateUser(
-  telegramId: bigint,
-  name: string
-): Promise<User> {
+async function createUser(telegramId: bigint, name: string): Promise<User> {
   try {
     return await Server.database.user.upsert({
       where: {
@@ -48,6 +45,6 @@ async function getUserById(userId: number): Promise<User | null> {
 }
 
 export default {
-  createOrUpdateUser,
+  createUser,
   getUserById,
 };

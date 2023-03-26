@@ -19,7 +19,7 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
         `${msg.chat?.id ?? 'NO_SENDER_ID'} redeemed token ${msg.text}`
       );
 
-      const user = await UsersService.createOrUpdateUser(
+      const user = await UsersService.createUser(
         BigInt(msg.chat.id),
         msg.chat.first_name ?? 'NO_NAME'
       );

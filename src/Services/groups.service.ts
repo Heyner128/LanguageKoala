@@ -3,8 +3,12 @@ import Server from '../server';
 
 async function createGroup(telegramId: bigint, name: string): Promise<Group> {
   try {
-    return await Server.database.group.create({
-      data: {
+    return await Server.database.group.upsert({
+      where: {
+        telegramId,
+      },
+      update: {},
+      create: {
         telegramId,
         name,
       },
