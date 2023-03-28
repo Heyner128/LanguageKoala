@@ -6,6 +6,12 @@ function delay(ms: number): Promise<void> {
   });
 }
 
+/**
+ * This function is used as a pre-validation hook to check the api key
+ *
+ * @param request - the request object
+ * @param reply - the reply object
+ */
 async function apiKeyPreValidation(
   request: FastifyRequest,
   reply: FastifyReply

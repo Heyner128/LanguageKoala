@@ -11,10 +11,17 @@ import {
 } from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 
+/**
+ * TypeBox doesn't seem to provide an error type, so I'm creating one here
+ */
 export const Error = Type.Object({
   message: Type.String(),
 });
 
+/**
+ * These types are used to provide typing on the fastify request controllers when they're imported from another file
+ * normally, the type is inferred from the schema, but since I am importing from another file re-building the types it's necessary
+ */
 export type FastifyRequestTypebox<TSchema extends FastifySchema> =
   FastifyRequest<
     RouteGenericInterface,
@@ -24,6 +31,10 @@ export type FastifyRequestTypebox<TSchema extends FastifySchema> =
     TypeBoxTypeProvider
   >;
 
+/**
+ * These types are used to provide typing on the fastify request controllers when they're imported from another file
+ * normally, the type is inferred from the schema, but since I am importing from another file re-building the types it's necessary
+ */
 export type FastifyReplyTypebox<TSchema extends FastifySchema> = FastifyReply<
   RawServerDefault,
   RawRequestDefaultExpression,
@@ -35,5 +46,5 @@ export type FastifyReplyTypebox<TSchema extends FastifySchema> = FastifyReply<
 >;
 
 export interface ApiHeaders {
-  'x-api-key': string;
+  'Api-Key': string;
 }

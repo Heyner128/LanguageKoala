@@ -6,6 +6,12 @@ export type Command = {
   resendCommands: 'same' | 'back';
 };
 
+/**
+ * A reply markup is a button that is displayed below the message, here we create a reply markup for a command list
+ *
+ * @param commands - the list of commands
+ * @returns the reply markup
+ */
 function commandsReplyMarkup(commands: Command[]): InlineKeyboardMarkup {
   return {
     inline_keyboard: commands.map((command, index) => [

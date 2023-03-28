@@ -11,6 +11,14 @@ import {
 } from '../Utils/types.util';
 import { CreateTokenSchema } from '../Models/tokens.dto';
 
+/**
+ * This is called when the user sends the token to the bot
+ * @param msg - The message object
+ *
+ * @returns A promise that resolves with the validation message
+ *
+ * @throws Error if the message object is not valid or the redeeming process fails
+ */
 async function redeemTokenListener(msg: Message): Promise<Message> {
   if (msg.chat.id && msg.text) {
     try {
@@ -57,6 +65,14 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
   throw error;
 }
 
+/**
+ * Sends a message requesting the token to the user and returns a promise that resolves when the token is redeemed
+ * @param msg - The message object
+ *
+ * @returns A promise that resolves when the token is redeemed
+ *
+ * @throws Error if the message object is not valid
+ */
 async function redeemToken(msg: Message): Promise<Message> {
   if (msg.chat.id && msg.text) {
     await Server.chatBot.sendMessage(
@@ -83,6 +99,11 @@ async function redeemToken(msg: Message): Promise<Message> {
   throw error;
 }
 
+/**
+ * Handles the creation of a new token on the route `/tokens`
+ * @param request - The request object
+ * @param reply - The reply object
+ */
 async function createToken(
   request: FastifyRequestTypebox<typeof CreateTokenSchema>,
   reply: FastifyReplyTypebox<typeof CreateTokenSchema>

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//data model
+// The telegramid fields are BigInts because they are 64 bit integers
+
+// Relationships:
+// User -> Subscription (1:n)
+// Group -> Subscription (1:n)
+// Group -> Token (1:n)
 
 model User {
   id        Int      @default(autoincrement()) @id

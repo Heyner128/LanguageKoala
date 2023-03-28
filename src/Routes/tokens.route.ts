@@ -4,6 +4,9 @@ import Server from '../server';
 import HelperFunctions from '../Utils/helperFunctions.util';
 import { ApiHeaders } from '../Utils/types.util';
 
+/**
+ * Adds the tokens routes, and adds the hooks of pre-validation and validation to fastify
+ */
 function init() {
   Server.httpServer.post<{
     Body: TokenType;

@@ -5,6 +5,12 @@ import Server from '../server';
 import GroupsService from '../Services/groups.service';
 import SubscriptionsService from '../Services/subscriptions.service';
 
+/**
+ * Parses a subscription to a string
+ * @param subscription - The subscription to parse
+ *
+ * @returns A promise that resolves with the parsed subscription
+ */
 async function parseSubscription(subscription: Subscription): Promise<string> {
   let status: string;
   if (dayjs(subscription.expiresAt).isAfter(new Date())) {
@@ -20,6 +26,14 @@ async function parseSubscription(subscription: Subscription): Promise<string> {
   `;
 }
 
+/**
+ * Sends the user his subscriptions on a single message
+ * @param msg - The message object
+ *
+ * @returns A promise that resolves with the message object
+ *
+ * @throws Error if the message object is not valid
+ */
 async function sendUserSubscriptions(msg: Message): Promise<Message | boolean> {
   const userId = msg.chat?.id;
   if (userId) {

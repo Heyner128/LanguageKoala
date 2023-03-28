@@ -4,6 +4,9 @@ import TokensController from './tokens.controller';
 import CommandsUtil, { Command } from '../Utils/commands.util';
 import Server from '../server';
 
+/**
+ * The command list to be sent to the user as buttons
+ */
 const commands: Command[] = [
   {
     description: 'Mis subscripciones',
@@ -17,12 +20,19 @@ const commands: Command[] = [
   },
 ];
 
+/**
+ * The back command to show when a new message is sent
+ */
 const backCommand: Command = {
   description: 'Volver',
   handler: () => Promise.resolve(true),
   resendCommands: 'same',
 };
 
+/**
+ * Sends the command list on private chats
+ * @param msg - The message received
+ */
 async function start(msg: Message) {
   const chatId = msg.chat.id;
   if (msg.chat.type !== 'private') return;
@@ -35,6 +45,16 @@ async function start(msg: Message) {
   Server.logger.info(`Commands sent to user ${chatId}`);
 }
 
+/**
+ * Handles the callback query from the command list if resendCommands value it's `same` resends the command list
+ * if it's `back` send a back button with the resendCommands value set to `same`
+ *
+ * @see {@link https://core.telegram.org/bots/api#callbackquery} for details on how the CallbackQuery works
+ *
+ * @param msg - The callback query received
+ *
+ * @returns A promise that resolves to the message sent
+ */
 function callbackQuery(msg: CallbackQuery) {
   const command = commands[Number(msg.data)];
   if (command) {

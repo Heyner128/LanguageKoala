@@ -9,11 +9,19 @@ import HelperFunctions from '../Utils/helperFunctions.util';
 import Server from '../server';
 import { GetGroupsSchema } from '../Models/groups.dto';
 
+const VALIDATION_TIMEOUT_IN_MINUTES: number = 5;
+
+/**
+ * Handler for the `/groups` route
+ * @param request - The request object
+ * @param reply - The reply object
+ */
 async function getGroups(
   request: FastifyRequestTypebox<typeof GetGroupsSchema>,
   reply: FastifyReplyTypebox<typeof GetGroupsSchema>
 ) {
   try {
+    // Here does string casting because Typebox 2.5.9 does not support BigInt
     const groups = await Server.database.group.findMany().then((grs) =>
       grs.map((gr) => ({
         id: gr.id,
@@ -38,6 +46,13 @@ async function getGroups(
   }
 }
 
+/**
+ * Handles the bot membership updates, requests to be added as administrator if it's not and
+ * send a confirmation message when it's active
+ * @param chatMemberUpdate - The chat member update object
+ *
+ * @see {@link https://core.telegram.org/bots/api#chatmemberupdated} for details
+ */
 async function botMembershipUpdate(
   chatMemberUpdate: TelegramBot.ChatMemberUpdated
 ) {
@@ -82,6 +97,12 @@ async function botMembershipUpdate(
   }
 }
 
+/**
+ * Handles the new members in the group, if the new member is not the bot, it checks if the user has a valid subscription
+ * if it does, it sends a welcome message, if it doesn't, it sends a message to validate the subscription and if the user
+ * doesn't validate it in a given time kicks the user from the group
+ * @param msg - The message object
+ */
 function newMembers(msg: TelegramBot.Message) {
   if (
     msg &&
@@ -128,7 +149,9 @@ function newMembers(msg: TelegramBot.Message) {
           Server.logger.info(
             `User subscription request sent to ${newMember.first_name} in group ${msg.chat.id}`
           );
-          await HelperFunctions.delay(5 * 60 * 1000);
+          await HelperFunctions.delay(
+            VALIDATION_TIMEOUT_IN_MINUTES * 60 * 1000
+          );
           if (
             await SubscriptionsService.userHasActiveSubscription(
               BigInt(newMember.id),
@@ -157,6 +180,11 @@ function newMembers(msg: TelegramBot.Message) {
   }
 }
 
+/**
+ * Handles the left members in the group, if the left member is not the bot, it unbans the user from the group
+ * This is because telegram API doesn't provide a kick command so the ban would prevent the user from joining again
+ * @param msg - The message object
+ */
 async function leftMember(msg: TelegramBot.Message) {
   if (
     msg &&

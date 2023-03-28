@@ -1,6 +1,16 @@
 import { Subscription } from '@prisma/client';
 import Server from '../server';
 
+/**
+ * Creates a subscription in the db
+ * @param userTelegramId - The telegram id of the user
+ * @param groupTelegramId - The telegram id of the group
+ * @param expiresAt - The date the subscription expires
+ *
+ * @returns A promise that resolves to the subscription
+ *
+ * @throws Error - If the subscription cannot be created, normally if the user or group cannot be found
+ */
 async function createSubscription(
   userTelegramId: bigint,
   groupTelegramId: bigint,
@@ -35,6 +45,15 @@ async function createSubscription(
   }
 }
 
+/**
+ * Checks if a user has an active subscription
+ * @param userId - The telegram id of the user
+ * @param groupId - The telegram id of the group
+ *
+ * @returns A promise that resolves to true if the user has an active subscription, false otherwise
+ *
+ * @throws Error - If the query fails
+ */
 async function userHasActiveSubscription(
   userId: bigint,
   groupId: bigint
@@ -63,6 +82,14 @@ async function userHasActiveSubscription(
   }
 }
 
+/**
+ * Gets all the subscriptions of a given user
+ * @param userId - The telegram id of the user
+ *
+ * @returns A promise that resolves to an array of subscriptions
+ *
+ * @throws Error - If the query fails, normally if the user cannot be found
+ */
 async function getSubscriptionsByUserId(
   userId: bigint
 ): Promise<Subscription[]> {

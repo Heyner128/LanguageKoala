@@ -1,6 +1,16 @@
 import { Group } from '@prisma/client';
 import Server from '../server';
 
+/**
+ * Creates a group in the db
+ *
+ * @param telegramId - The telegram id of the group
+ * @param name - The name of the group
+ *
+ * @returns A promise that resolves to the group
+ *
+ * @throws Error - If the group cannot be created
+ */
 async function createGroup(telegramId: bigint, name: string): Promise<Group> {
   try {
     return await Server.database.group.upsert({
@@ -25,6 +35,14 @@ async function createGroup(telegramId: bigint, name: string): Promise<Group> {
   }
 }
 
+/**
+ * Deletes a group from the db
+ * @param groupId - The telegram id of the group
+ *
+ * @returns A promise that resolves to the group that was deleted
+ *
+ * @throws Error - If the group cannot be found
+ */
 async function deleteGroup(groupId: bigint): Promise<Group> {
   try {
     return await Server.database.group.delete({
@@ -44,6 +62,15 @@ async function deleteGroup(groupId: bigint): Promise<Group> {
   }
 }
 
+/**
+ * Get a group from the db by its telegram id
+ *
+ * @param groupId - The telegram id of the group
+ *
+ * @returns A promise that resolves to the group
+ *
+ * @throws Error - If the group cannot be found
+ */
 async function getGroupById(groupId: bigint): Promise<Group | null> {
   try {
     return await Server.database.group.findUnique({

@@ -14,12 +14,13 @@
         "ecmaVersion": 2018,
         "project": "./tsconfig.json"
     },
-    "plugins": ["import", "prettier", "@typescript-eslint"],
+    "plugins": ["import", "prettier", "@typescript-eslint", "eslint-plugin-tsdoc"],
     "rules": {
         "import/no-unresolved": "error",
         "prettier/prettier": "error",
         "no-unused-vars": "warn",
-        "no-use-before-define" : "warn"
+        "no-use-before-define" : "warn",
+        "tsdoc/syntax" : "warn"
     },
     "settings": {
         "import/parsers": {

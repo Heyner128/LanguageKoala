@@ -1,6 +1,9 @@
 import { Static, Type } from '@sinclair/typebox';
 import { Error } from '../Utils/types.util';
 
+/**
+ * The token TypeBox for request and reply validation
+ */
 export const Token = Type.Object({
   id: Type.Optional(Type.Number()),
   token: Type.Optional(Type.String()),
@@ -11,6 +14,9 @@ export const Token = Type.Object({
 
 export type TokenType = Static<typeof Token>;
 
+/**
+ * The schema to pass to fastify for request and reply validation
+ */
 export const CreateTokenSchema = {
   body: Token,
   response: {

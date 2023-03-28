@@ -1,6 +1,15 @@
 import { User } from '@prisma/client';
 import Server from '../server';
 
+/**
+ * Create or updates the name of a user from the db
+ * @param telegramId - The telegram id of the user
+ * @param name - The name of the user
+ *
+ * @returns A promise that resolves to the user
+ *
+ * @throws Error - If the user cannot be created or updated
+ */
 async function createUser(telegramId: bigint, name: string): Promise<User> {
   try {
     return await Server.database.user.upsert({
@@ -27,6 +36,14 @@ async function createUser(telegramId: bigint, name: string): Promise<User> {
   }
 }
 
+/**
+ * Get a user from the db by their telegram id
+ * @param userId - The telegram id of the user
+ *
+ * @returns A promise that resolves to the user
+ *
+ * @throws Error - If the user cannot be found
+ */
 async function getUserById(userId: number): Promise<User | null> {
   try {
     return await Server.database.user.findUnique({
