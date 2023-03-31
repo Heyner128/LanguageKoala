@@ -1,6 +1,4 @@
 import * as dotenv from 'dotenv';
-import { Update } from 'node-telegram-bot-api';
-import { FastifyReply, FastifyRequest } from 'fastify';
 import GroupsRouter from './Routes/groups.route';
 import UsersRouter from './Routes/users.route';
 import TokensRouter from './Routes/tokens.route';
@@ -32,15 +30,6 @@ async function start() {
     process.exit(1);
   }
 
-  Server.httpServer.post<{
-    Body: Update;
-  }>(
-    `/webhook${process.env.BOT_TOKEN}`,
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      Server.chatBot.processUpdate(request.body as Update);
-      reply.send(200);
-    }
-  );
   Server.logger.info('App started successfully');
 }
 
