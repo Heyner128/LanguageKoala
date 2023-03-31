@@ -10,7 +10,7 @@ const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '', {
   polling: true,
 });
 
-if (!process.env.PUBLICURL) throw new Error('PUBLICURL is not defined!');
+if (!process.env.PUBLIC_URL) throw new Error('PUBLIC_URL is not defined!');
 
 await chatBot.setWebHook(
   `${process.env.PUBLICURL}/webhook${process.env.BOT_TOKEN}`
