@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import TelegramBot from 'node-telegram-bot-api';
-import fastify from 'fastify';
+import TelegramBot, { Update } from 'node-telegram-bot-api';
+import fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import { createLogger, format, transports } from 'winston';
 
 const database = new PrismaClient();
@@ -10,7 +10,23 @@ const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '', {
   polling: true,
 });
 
+if (!process.env.PUBLICURL) throw new Error('PUBLICURL is not defined!');
+
+await chatBot.setWebHook(
+  `${process.env.PUBLICURL}/webhook${process.env.BOT_TOKEN}`
+);
+
 const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
+
+httpServer.post<{
+  Body: Update;
+}>(
+  `/webhook${process.env.BOT_TOKEN}`,
+  async (request: FastifyRequest, reply: FastifyReply) => {
+    chatBot.processUpdate(request.body as Update);
+    reply.send(200);
+  }
+);
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
