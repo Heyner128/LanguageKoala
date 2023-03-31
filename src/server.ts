@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import TelegramBot, { Update } from 'node-telegram-bot-api';
-import fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import TelegramBot from 'node-telegram-bot-api';
+import fastify from 'fastify';
 import { createLogger, format, transports } from 'winston';
 
 const database = new PrismaClient();
@@ -17,16 +17,6 @@ await chatBot.setWebHook(
 );
 
 const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
-
-httpServer.post<{
-  Body: Update;
-}>(
-  `/webhook${process.env.BOT_TOKEN}`,
-  async (request: FastifyRequest, reply: FastifyReply) => {
-    chatBot.processUpdate(request.body as Update);
-    reply.send(200);
-  }
-);
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
