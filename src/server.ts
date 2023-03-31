@@ -10,23 +10,7 @@ const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '', {
   polling: true,
 });
 
-if (!process.env.PUBLIC_URL) throw new Error('PUBLIC_URL is not defined!');
-
-await chatBot.setWebHook(
-  `${process.env.PUBLIC_URL}/webhook${process.env.BOT_TOKEN}`
-);
-
 const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
-
-httpServer.post<{
-  Body: Update;
-}>(
-  `/webhook${process.env.BOT_TOKEN}`,
-  async (request: FastifyRequest, reply: FastifyReply) => {
-    chatBot.processUpdate(request.body as Update);
-    reply.send(200);
-  }
-);
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
@@ -49,10 +33,26 @@ const logger = createLogger({
 });
 
 if (process.env.NODE_ENV !== 'production') {
+  // enables console logging in development
   logger.add(
     new transports.Console({
       format: format.combine(format.colorize(), logTextFormat),
     })
+  );
+} else {
+  // enables webhook in production
+  if (!process.env.PUBLIC_URL) throw new Error('PUBLIC_URL is not defined!');
+  await chatBot.setWebHook(
+    `${process.env.PUBLIC_URL}/webhook${process.env.BOT_TOKEN}`
+  );
+  httpServer.post<{
+    Body: Update;
+  }>(
+    `/webhook${process.env.BOT_TOKEN}`,
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      chatBot.processUpdate(request.body as Update);
+      reply.send(200);
+    }
   );
 }
 
