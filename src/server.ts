@@ -4,12 +4,6 @@ import TelegramBot, { Update } from 'node-telegram-bot-api';
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import { createLogger, format, transports } from 'winston';
 
-const database = new PrismaClient();
-
-const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
-
-const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
-
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
     `${timestamp} ${level}: ${stack || message}`
@@ -29,6 +23,12 @@ const logger = createLogger({
     new transports.File({ filename: './logs/combined.log' }),
   ],
 });
+
+const database = new PrismaClient();
+
+const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
+
+const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
 
 if (process.env.NODE_ENV !== 'production') {
   // enables console logging in development

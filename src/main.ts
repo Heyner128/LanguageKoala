@@ -17,6 +17,15 @@ async function start() {
     );
     process.exit(1);
   });
+
+  Server.chatBot.on('webhook_error', (error) => {
+    Server.logger.error(
+      new Error(`
+      Telegram bot webhook error: ${error.message}`)
+    );
+    process.exit(1);
+  });
+
   try {
     const PORT = !Number.isNaN(Number(process.env.PORT))
       ? Number(process.env.PORT)
