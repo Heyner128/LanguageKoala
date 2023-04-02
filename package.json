@@ -1,6 +1,6 @@
 {
   "private": true,
-  "main": "index.js",
+  "main": "main.js",
   "type": "module",
   "scripts": {
     "build": "rimraf ./build && tsc",

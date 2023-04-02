@@ -6,9 +6,7 @@ import { createLogger, format, transports } from 'winston';
 
 const database = new PrismaClient();
 
-const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '', {
-  polling: true,
-});
+const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
 
 const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
 
