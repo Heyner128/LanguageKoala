@@ -7,11 +7,7 @@
     "start": "npm run build && ts-node --esm build/main.js",
     "start:dev": "nodemon --exec ts-node --esm src/main.ts",
     "lint": "eslint --ext .ts src",
-    "lint:fix": "eslint --ext .ts src --fix",
-    "prisma:push": "prisma db push --schema ./src/Models/schema.prisma",
-    "prisma:migratedev": "prisma migrate dev --schema ./src/Models/schema.prisma",
-    "prisma:generate": "prisma generate --schema ./src/Models/schema.prisma",
-    "prisma:migrate": "prisma migrate deploy --schema ./src/Models/schema.prisma"
+    "lint:fix": "eslint --ext .ts src --fix"
   },
   "keywords": [],
   "author": "",
@@ -33,14 +29,13 @@
     "eslint-plugin-tsdoc": "^0.2.17",
     "nodemon": "^2.0.20",
     "prettier": "2.8.3",
-    "prisma": "^4.11.0",
     "rimraf": "^4.1.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.2"
   },
   "dependencies": {
     "@fastify/type-provider-typebox": "^2.4.0",
-    "@prisma/client": "^4.11.0",
+    "@google-cloud/firestore": "^6.5.0",
     "@sinclair/typebox": "^0.25.9",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",

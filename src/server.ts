@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import { createLogger, format, transports } from 'winston';
+import { Firestore } from '@google-cloud/firestore';
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
@@ -24,7 +24,10 @@ const logger = createLogger({
   ],
 });
 
-const database = new PrismaClient();
+const database = new Firestore({
+  projectId: process.env.GCP_PROJECT_ID,
+  keyFilename: process.env.GCP_KEY_PATH,
+});
 
 const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
 
