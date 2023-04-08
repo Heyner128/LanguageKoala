@@ -5,7 +5,7 @@ import {
   FastifyReplyTypebox,
   FastifyRequestTypebox,
 } from '../Utils/types.util';
-import HelperFunctions from '../Utils/helperFunctions.util';
+import HelperFunctions from '../Utils/functions.util';
 import Server from '../server';
 import { GetGroupsSchema } from '../Models/groups.dto';
 

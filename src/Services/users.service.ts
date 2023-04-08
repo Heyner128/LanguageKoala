@@ -1,28 +1,23 @@
-import { User } from '@prisma/client';
+import { WriteResult } from '@google-cloud/firestore';
+import { UserType } from '../Models/users.dto';
 import Server from '../server';
 
 /**
- * Create or updates the name of a user from the db
+ * Creates or updates a user in the db
  * @param telegramId - The telegram id of the user
  * @param name - The name of the user
  *
- * @returns A promise that resolves to the user
+ * @returns A promise that resolves to the write result
  *
  * @throws Error - If the user cannot be created or updated
  */
-async function createUser(telegramId: bigint, name: string): Promise<User> {
+async function createUser(
+  telegramId: bigint,
+  name: string
+): Promise<WriteResult> {
   try {
-    return await Server.database.user.upsert({
-      where: {
-        telegramId,
-      },
-      update: {
-        name,
-      },
-      create: {
-        telegramId,
-        name,
-      },
+    return await Server.database.users.doc(String(telegramId)).set({
+      name,
     });
   } catch (error) {
     Server.logger.error(
@@ -44,20 +39,23 @@ async function createUser(telegramId: bigint, name: string): Promise<User> {
  *
  * @throws Error - If the user cannot be found
  */
-async function getUserById(userId: number): Promise<User | null> {
+async function getUserById(userId: bigint): Promise<UserType | undefined> {
   try {
-    return await Server.database.user.findUnique({
-      where: {
-        telegramId: userId,
-      },
-    });
+    const doc = await Server.database.users.doc(String(userId)).get();
+
+    if (!doc.exists) {
+      Server.logger.error(new Error(`User not found: ${userId}`));
+      throw new Error('Cannot get user, not found');
+    } else {
+      return doc.data();
+    }
   } catch (error) {
     Server.logger.error(
       new Error(
         `User find error: ${error instanceof Error ? error : 'UNDEFINED'}`
       )
     );
-    throw new Error('Cannot get user, not found');
+    throw new Error('Cannot get user, database error');
   }
 }
 

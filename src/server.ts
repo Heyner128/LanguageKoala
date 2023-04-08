@@ -2,7 +2,10 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import { createLogger, format, transports } from 'winston';
-import { Firestore } from '@google-cloud/firestore';
+import DBUtils from './Utils/database.util';
+import { UserType } from './Models/users.dto';
+import { SubscriptionType } from './Models/subscription.dto';
+import { TokenType } from './Models/tokens.dto';
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
@@ -24,10 +27,12 @@ const logger = createLogger({
   ],
 });
 
-const database = new Firestore({
-  projectId: process.env.GCP_PROJECT_ID,
-  keyFilename: process.env.GCP_KEY_PATH,
-});
+const database = {
+  users: DBUtils.dataPoint<UserType>('users'),
+  subscriptions: (userId: string) =>
+    DBUtils.dataPoint<SubscriptionType>(`users/${userId}/subscriptions`),
+  tokens: DBUtils.dataPoint<TokenType>('tokens'),
+};
 
 const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
 

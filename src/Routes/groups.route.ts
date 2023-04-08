@@ -1,7 +1,7 @@
 import { GetGroupsSchema, GroupsType } from '../Models/groups.dto';
 import GroupsController from '../Controllers/groups.controller';
 import Server from '../server';
-import HelperFunctions from '../Utils/helperFunctions.util';
+import HelperFunctions from '../Utils/functions.util';
 import { ApiHeaders } from '../Utils/types.util';
 
 /**

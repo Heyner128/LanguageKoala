@@ -1,7 +1,7 @@
 import { CreateTokenSchema, TokenType } from '../Models/tokens.dto';
 import TokensController from '../Controllers/tokens.controller';
 import Server from '../server';
-import HelperFunctions from '../Utils/helperFunctions.util';
+import HelperFunctions from '../Utils/functions.util';
 import { ApiHeaders } from '../Utils/types.util';
 
 /**
