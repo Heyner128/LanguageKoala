@@ -3,7 +3,7 @@ import { UserType } from '../Models/users.dto';
 import Server from '../server';
 
 /**
- * Creates or updates a user in the db
+ * Creates a user in the db
  * @param telegramId - The telegram id of the user
  * @param name - The name of the user
  *
@@ -43,12 +43,7 @@ async function getUserById(userId: bigint): Promise<UserType | undefined> {
   try {
     const doc = await Server.database.users.doc(String(userId)).get();
 
-    if (!doc.exists) {
-      Server.logger.error(new Error(`User not found: ${userId}`));
-      throw new Error('Cannot get user, not found');
-    } else {
-      return doc.data();
-    }
+    return doc.exists ? doc.data() : undefined;
   } catch (error) {
     Server.logger.error(
       new Error(

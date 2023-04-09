@@ -6,6 +6,7 @@ import DBUtils from './Utils/database.util';
 import { UserType } from './Models/users.dto';
 import { SubscriptionType } from './Models/subscription.dto';
 import { TokenType } from './Models/tokens.dto';
+import { GroupsType } from './Models/groups.dto';
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
@@ -32,6 +33,7 @@ const database = {
   subscriptions: (userId: string) =>
     DBUtils.dataPoint<SubscriptionType>(`users/${userId}/subscriptions`),
   tokens: DBUtils.dataPoint<TokenType>('tokens'),
+  groups: DBUtils.dataPoint<GroupsType>('groups'),
 };
 
 const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');

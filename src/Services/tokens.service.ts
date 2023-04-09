@@ -1,4 +1,4 @@
-import { Token } from '@prisma/client';
+import { WriteResult } from '@google-cloud/firestore';
 import Server from '../server';
 
 /**
@@ -7,7 +7,7 @@ import Server from '../server';
  * @param groupId - The group id to associate the token with
  * @param subscriptionDurationInDays - The duration of the subscription
  *
- * @returns A promise that resolves to the token
+ * @returns A promise that resolves to the write result
  *
  * @throws Error - If the token cannot be created
  */
@@ -15,18 +15,12 @@ async function createToken(
   token: string,
   groupId: bigint,
   subscriptionDurationInDays: number
-): Promise<Token> {
+): Promise<WriteResult> {
   try {
-    return await Server.database.token.create({
-      data: {
-        token,
-        group: {
-          connect: {
-            telegramId: groupId,
-          },
-        },
-        subscriptionDurationInDays,
-      },
+    return await Server.database.tokens.doc(token).set({
+      groupId: String(groupId),
+      subscriptionDurationInDays,
+      redeemed: false,
     });
   } catch (error) {
     Server.logger.error(
@@ -43,19 +37,14 @@ async function createToken(
  * Changes a token status to redeemed
  * @param token - The token to redeem
  *
- * @returns A promise that resolves to the token that was redeemed
+ * @returns A promise that resolves to the write result
  *
  * @throws Error - If the token cannot be found
  */
-async function redeemToken(token: string): Promise<Token> {
+async function redeemToken(token: string): Promise<WriteResult> {
   try {
-    return await Server.database.token.update({
-      where: {
-        token,
-      },
-      data: {
-        redeemed: true,
-      },
+    return await Server.database.tokens.doc(token).update({
+      redeemed: true,
     });
   } catch (error) {
     Server.logger.error(

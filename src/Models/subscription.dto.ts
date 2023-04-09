@@ -1,7 +1,5 @@
-import { GroupsType } from './groups.dto';
-
 export type SubscriptionType = {
-  group: GroupsType;
+  groupId: bigint;
   expiresAt: Date;
   createdAt: Date;
   updatedAt: Date;

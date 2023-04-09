@@ -1,5 +1,6 @@
-import { Group } from '@prisma/client';
+import { WriteResult } from '@google-cloud/firestore';
 import Server from '../server';
+import { GroupType } from '../Models/groups.dto';
 
 /**
  * Creates a group in the db
@@ -7,21 +8,17 @@ import Server from '../server';
  * @param telegramId - The telegram id of the group
  * @param name - The name of the group
  *
- * @returns A promise that resolves to the group
+ * @returns A promise that resolves to the write result
  *
  * @throws Error - If the group cannot be created
  */
-async function createGroup(telegramId: bigint, name: string): Promise<Group> {
+async function createGroup(
+  telegramId: bigint,
+  name: string
+): Promise<WriteResult> {
   try {
-    return await Server.database.group.upsert({
-      where: {
-        telegramId,
-      },
-      update: {},
-      create: {
-        telegramId,
-        name,
-      },
+    return await Server.database.groups.doc(String(telegramId)).set({
+      name,
     });
   } catch (error) {
     Server.logger.error(
@@ -39,17 +36,13 @@ async function createGroup(telegramId: bigint, name: string): Promise<Group> {
  * Deletes a group from the db
  * @param groupId - The telegram id of the group
  *
- * @returns A promise that resolves to the group that was deleted
+ * @returns A promise that resolves to the write result
  *
  * @throws Error - If the group cannot be found
  */
-async function deleteGroup(groupId: bigint): Promise<Group> {
+async function deleteGroup(groupId: bigint): Promise<WriteResult> {
   try {
-    return await Server.database.group.delete({
-      where: {
-        telegramId: groupId,
-      },
-    });
+    return await Server.database.groups.doc(String(groupId)).delete();
   } catch (error) {
     Server.logger.error(
       new Error(
@@ -63,21 +56,27 @@ async function deleteGroup(groupId: bigint): Promise<Group> {
 }
 
 /**
- * Get a group from the db by its telegram id
+ * Get a group from the db by its telegram id or all groups if id it's not provided
  *
- * @param groupId - The telegram id of the group
+ * @param groupId - Optional The telegram id of the group
  *
- * @returns A promise that resolves to the group
+ * @returns A promise that resolves to the group or undefined if not found
  *
  * @throws Error - If the group cannot be found
  */
-async function getGroupById(groupId: bigint): Promise<Group | null> {
+async function getGroups(groupId?: bigint): Promise<GroupType[] | undefined> {
   try {
-    return await Server.database.group.findUnique({
-      where: {
-        telegramId: groupId,
-      },
-    });
+    const snapshot = await Server.database.groups.get();
+    const docs =
+      groupId !== undefined
+        ? snapshot.docs.filter((doc) => doc.id === String(groupId))
+        : snapshot.docs;
+
+    if (docs.length === 0) {
+      return undefined;
+    }
+
+    return docs.map((doc) => doc.data());
   } catch (error) {
     Server.logger.error(
       new Error(
@@ -90,4 +89,4 @@ async function getGroupById(groupId: bigint): Promise<Group | null> {
   }
 }
 
-export default { getGroupById, createGroup, deleteGroup };
+export default { getGroups, createGroup, deleteGroup };

@@ -22,13 +22,7 @@ async function getGroups(
 ) {
   try {
     // Here does string casting because Typebox 2.5.9 does not support BigInt
-    const groups = await Server.database.group.findMany().then((grs) =>
-      grs.map((gr) => ({
-        id: gr.id,
-        telegramId: String(gr.telegramId),
-        name: gr.name,
-      }))
-    );
+    const groups = await GroupsService.getGroups();
     reply.status(200).send(groups);
   } catch (error) {
     Server.logger.error(

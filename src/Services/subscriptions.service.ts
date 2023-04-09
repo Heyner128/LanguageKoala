@@ -20,7 +20,6 @@ async function createSubscription(
   expiresAt: Date
 ): Promise<WriteResult> {
   try {
-    await UserService.getUserById(userTelegramId);
     return await Server.database.users
       .doc(String(userTelegramId))
       .collection('subscriptions')
@@ -84,7 +83,6 @@ async function getSubscriptionsByUserId(
   userTelegramId: bigint
 ): Promise<SubscriptionType[]> {
   try {
-    await UserService.getUserById(userTelegramId);
     const snapshot = await Server.database
       .subscriptions(String(userTelegramId))
       .get();
@@ -96,7 +94,7 @@ async function getSubscriptionsByUserId(
       }
       `)
     );
-    throw new Error('Cannot get subscriptions, user not found');
+    throw new Error('Cannot get subscriptions');
   }
 }
 
