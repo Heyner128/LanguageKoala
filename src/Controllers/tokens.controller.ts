@@ -22,21 +22,30 @@ import { CreateTokenSchema } from '../Models/tokens.dto';
 async function redeemTokenListener(msg: Message): Promise<Message> {
   if (msg.chat.id && msg.text) {
     try {
-      const token = await TokensService.redeemToken(msg.text);
+      await TokensService.redeemToken(msg.text);
       Server.logger.info(
         `${msg.chat?.id ?? 'NO_SENDER_ID'} redeemed token ${msg.text}`
       );
 
-      const user = await UsersService.createUser(
+      const token = await TokensService.getTokenById(msg.text);
+
+      await UsersService.createUser(
         BigInt(msg.chat.id),
         msg.chat.first_name ?? 'NO_NAME'
       );
 
-      const subscription = await SubscriptionsService.createSubscription(
-        user.telegramId,
-        token.groupId,
+      await SubscriptionsService.createSubscription(
+        BigInt(msg.chat.id),
+        BigInt(token.groupId),
         dayjs().add(token.subscriptionDurationInDays, 'day').toDate()
       );
+
+      const subscription = (
+        await SubscriptionsService.getSubscriptions(
+          BigInt(msg.chat.id),
+          BigInt(token.groupId)
+        )
+      )[0];
 
       Server.logger.info(
         `Subscription created for group ${subscription.groupId} until ${subscription.expiresAt} `
@@ -110,11 +119,17 @@ async function createToken(
 ) {
   try {
     const { groupId, subscriptionDurationInDays } = request.body;
-    const token = await TokensService.createToken(
-      uuid(),
+
+    const tokenId = uuid();
+
+    await TokensService.createToken(
+      tokenId,
       BigInt(groupId),
       subscriptionDurationInDays
     );
+
+    const token = await TokensService.getTokenById(tokenId);
+
     reply.status(200).send({
       ...token,
       groupId: token.groupId.toString(),

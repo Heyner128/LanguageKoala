@@ -1,10 +1,7 @@
-import * as dotenv from 'dotenv';
 import GroupsRouter from './Routes/groups.route';
 import UsersRouter from './Routes/users.route';
 import TokensRouter from './Routes/tokens.route';
 import Server from './server';
-
-dotenv.config();
 
 async function start() {
   GroupsRouter.init();
@@ -42,4 +39,4 @@ async function start() {
   Server.logger.info('App started successfully');
 }
 
-start();
+await start();

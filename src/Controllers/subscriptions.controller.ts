@@ -1,9 +1,9 @@
-import { Subscription } from '@prisma/client';
 import dayjs from 'dayjs';
 import { Message } from 'node-telegram-bot-api';
 import Server from '../server';
 import GroupsService from '../Services/groups.service';
 import SubscriptionsService from '../Services/subscriptions.service';
+import { SubscriptionType } from '../Models/subscription.dto';
 
 /**
  * Parses a subscription to a string
@@ -11,7 +11,9 @@ import SubscriptionsService from '../Services/subscriptions.service';
  *
  * @returns A promise that resolves with the parsed subscription
  */
-async function parseSubscription(subscription: Subscription): Promise<string> {
+async function parseSubscription(
+  subscription: SubscriptionType
+): Promise<string> {
   let status: string;
   if (dayjs(subscription.expiresAt).isAfter(new Date())) {
     status = 'Activa';
@@ -19,8 +21,12 @@ async function parseSubscription(subscription: Subscription): Promise<string> {
     status = 'Expirada';
   }
 
+  const groups = await GroupsService.getGroups(subscription.groupId);
+
   return `
-    Grupo: ${(await GroupsService.getGroupById(subscription.groupId))?.name}
+    Grupo: ${
+      groups && groups.length > 0 ? groups[0].name : 'Grupo no encontrado'
+    }
     Valida hasta: ${dayjs(subscription.expiresAt).format('DD/MM/YYYY')}
     Estado: ${status}
   `;
@@ -37,8 +43,8 @@ async function parseSubscription(subscription: Subscription): Promise<string> {
 async function sendUserSubscriptions(msg: Message): Promise<Message | boolean> {
   const userId = msg.chat?.id;
   if (userId) {
-    const subscriptions: Subscription[] =
-      await SubscriptionsService.getSubscriptionsByUserId(BigInt(userId));
+    const subscriptions: SubscriptionType | SubscriptionType[] =
+      await SubscriptionsService.getSubscriptions(BigInt(userId));
     const parsedSubscriptions = await Promise.all(
       subscriptions.map((subscription) => parseSubscription(subscription))
     );

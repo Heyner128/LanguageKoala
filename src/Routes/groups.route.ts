@@ -1,4 +1,4 @@
-import { GetGroupsSchema, GroupsType } from '../Models/groups.dto';
+import { GetGroupsSchema, GroupType } from '../Models/groups.dto';
 import GroupsController from '../Controllers/groups.controller';
 import Server from '../server';
 import HelperFunctions from '../Utils/functions.util';
@@ -12,7 +12,7 @@ function init() {
   Server.chatBot.on('new_chat_members', GroupsController.newMembers);
   Server.chatBot.on('left_chat_member', GroupsController.leftMember);
   Server.httpServer.get<{
-    Reply: GroupsType;
+    Reply: GroupType[];
     Headers: ApiHeaders;
   }>(
     '/groups',

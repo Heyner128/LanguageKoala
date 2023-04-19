@@ -1,5 +1,6 @@
 import { WriteResult } from '@google-cloud/firestore';
 import Server from '../server';
+import { TokenType } from '../Models/tokens.dto';
 
 /**
  * Creates a token in the db
@@ -34,6 +35,20 @@ async function createToken(
 }
 
 /**
+ * Get a token by id from the db
+ *
+ * @param token - The token to get
+ */
+
+async function getTokenById(token: string): Promise<TokenType> {
+  const doc = await Server.database.tokens.doc(token).get();
+
+  if (!doc.exists) throw new Error('Token not found');
+
+  return doc.data() as TokenType;
+}
+
+/**
  * Changes a token status to redeemed
  * @param token - The token to redeem
  *
@@ -42,19 +57,9 @@ async function createToken(
  * @throws Error - If the token cannot be found
  */
 async function redeemToken(token: string): Promise<WriteResult> {
-  try {
-    return await Server.database.tokens.doc(token).update({
-      redeemed: true,
-    });
-  } catch (error) {
-    Server.logger.error(
-      new Error(`
-      Token redemption database error: ${
-        error instanceof Error ? error : 'UNDEFINED'
-      }`)
-    );
-    throw new Error('Cannot redeem token, not found');
-  }
+  return Server.database.tokens.doc(token).update({
+    redeemed: true,
+  });
 }
 
-export default { createToken, redeemToken };
+export default { createToken, redeemToken, getTokenById };

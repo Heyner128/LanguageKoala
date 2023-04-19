@@ -1,3 +1,4 @@
+import * as dotenv from 'dotenv';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
@@ -6,7 +7,9 @@ import DBUtils from './Utils/database.util';
 import { UserType } from './Models/users.dto';
 import { SubscriptionType } from './Models/subscription.dto';
 import { TokenType } from './Models/tokens.dto';
-import { GroupsType } from './Models/groups.dto';
+import { GroupType } from './Models/groups.dto';
+
+dotenv.config();
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
@@ -33,7 +36,7 @@ const database = {
   subscriptions: (userId: string) =>
     DBUtils.dataPoint<SubscriptionType>(`users/${userId}/subscriptions`),
   tokens: DBUtils.dataPoint<TokenType>('tokens'),
-  groups: DBUtils.dataPoint<GroupsType>('groups'),
+  groups: DBUtils.dataPoint<GroupType>('groups'),
 };
 
 const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
@@ -47,6 +50,8 @@ if (process.env.NODE_ENV !== 'production') {
       format: format.combine(format.colorize(), logTextFormat),
     })
   );
+  // enables polling in development
+  await chatBot.startPolling();
 } else {
   // enables webhook in production
   if (!process.env.PUBLIC_URL) throw new Error('PUBLIC_URL is not defined!');

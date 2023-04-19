@@ -15,20 +15,9 @@ async function createUser(
   telegramId: bigint,
   name: string
 ): Promise<WriteResult> {
-  try {
-    return await Server.database.users.doc(String(telegramId)).set({
-      name,
-    });
-  } catch (error) {
-    Server.logger.error(
-      new Error(
-        `User create or update error: ${
-          error instanceof Error ? error : 'UNDEFINED'
-        }`
-      )
-    );
-    throw new Error('Cannot create or update user');
-  }
+  return Server.database.users.doc(String(telegramId)).set({
+    name,
+  });
 }
 
 /**
@@ -39,19 +28,12 @@ async function createUser(
  *
  * @throws Error - If the user cannot be found
  */
-async function getUserById(userId: bigint): Promise<UserType | undefined> {
-  try {
-    const doc = await Server.database.users.doc(String(userId)).get();
+async function getUserById(userId: bigint): Promise<UserType> {
+  const doc = await Server.database.users.doc(String(userId)).get();
 
-    return doc.exists ? doc.data() : undefined;
-  } catch (error) {
-    Server.logger.error(
-      new Error(
-        `User find error: ${error instanceof Error ? error : 'UNDEFINED'}`
-      )
-    );
-    throw new Error('Cannot get user, database error');
-  }
+  if (!doc.exists) throw new Error('User not found');
+
+  return doc.data() as UserType;
 }
 
 export default {

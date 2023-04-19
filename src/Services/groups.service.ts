@@ -16,20 +16,9 @@ async function createGroup(
   telegramId: bigint,
   name: string
 ): Promise<WriteResult> {
-  try {
-    return await Server.database.groups.doc(String(telegramId)).set({
-      name,
-    });
-  } catch (error) {
-    Server.logger.error(
-      new Error(
-        `Group creation database error: ${
-          error instanceof Error ? error : 'UNDEFINED'
-        }`
-      )
-    );
-    throw new Error('Cannot create group, already exists');
-  }
+  return Server.database.groups.doc(String(telegramId)).set({
+    name,
+  });
 }
 
 /**
@@ -41,18 +30,7 @@ async function createGroup(
  * @throws Error - If the group cannot be found
  */
 async function deleteGroup(groupId: bigint): Promise<WriteResult> {
-  try {
-    return await Server.database.groups.doc(String(groupId)).delete();
-  } catch (error) {
-    Server.logger.error(
-      new Error(
-        `Group deletion database error: ${
-          error instanceof Error ? error : 'UNDEFINED'
-        }`
-      )
-    );
-    throw new Error('Cannot delete group, not found');
-  }
+  return Server.database.groups.doc(String(groupId)).delete();
 }
 
 /**
@@ -64,29 +42,18 @@ async function deleteGroup(groupId: bigint): Promise<WriteResult> {
  *
  * @throws Error - If the group cannot be found
  */
-async function getGroups(groupId?: bigint): Promise<GroupType[] | undefined> {
-  try {
-    const snapshot = await Server.database.groups.get();
-    const docs =
-      groupId !== undefined
-        ? snapshot.docs.filter((doc) => doc.id === String(groupId))
-        : snapshot.docs;
+async function getGroups(groupId?: bigint): Promise<GroupType[]> {
+  const snapshot = await Server.database.groups.get();
+  const docs =
+    groupId !== undefined
+      ? snapshot.docs.filter((doc) => doc.id === String(groupId))
+      : snapshot.docs;
 
-    if (docs.length === 0) {
-      return undefined;
-    }
-
-    return docs.map((doc) => doc.data());
-  } catch (error) {
-    Server.logger.error(
-      new Error(
-        `Group deletion find error: ${
-          error instanceof Error ? error : 'UNDEFINED'
-        }`
-      )
-    );
-    throw new Error('Cannot get group, not found');
+  if (docs.length === 0) {
+    throw new Error('Group not found');
   }
+
+  return docs.map((doc) => doc.data());
 }
 
 export default { getGroups, createGroup, deleteGroup };

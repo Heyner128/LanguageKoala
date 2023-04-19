@@ -1,7 +1,6 @@
 import { WriteResult } from '@google-cloud/firestore';
 import dayjs from 'dayjs';
 import { SubscriptionType } from '../Models/subscription.dto';
-import UserService from './users.service';
 import Server from '../server';
 
 /**
@@ -19,87 +18,72 @@ async function createSubscription(
   groupTelegramId: bigint,
   expiresAt: Date
 ): Promise<WriteResult> {
-  try {
-    return await Server.database.users
-      .doc(String(userTelegramId))
-      .collection('subscriptions')
-      .doc(String(groupTelegramId))
-      .set({
-        expiresAt,
-      });
-  } catch (error) {
-    Server.logger.error(
-      new Error(
-        `Subscription creation database error: ${
-          error instanceof Error ? error : 'UNDEFINED'
-        }
-      `
-      )
-    );
-    throw new Error('Cannot create subscription, user or group not found');
-  }
+  return Server.database.users
+    .doc(String(userTelegramId))
+    .collection('subscriptions')
+    .doc(String(groupTelegramId))
+    .set({
+      expiresAt,
+    });
 }
 
 /**
  * Checks if a user has an active subscription
  * @param userId - The telegram id of the user
+ * @param groupId - The telegram id of the group
  *
  * @returns A promise that resolves to true if the user has an active subscription, false otherwise
  *
  * @throws Error - If the query fails
  */
-async function userHasActiveSubscription(userId: bigint): Promise<boolean> {
-  try {
-    const snapshot = await Server.database
-      .subscriptions(String(userId))
-      .where('expiresAt', '>', dayjs().toDate())
-      .get();
+async function userHasActiveSubscription(
+  userId: bigint,
+  groupId: bigint
+): Promise<boolean> {
+  const snapshot = await Server.database
+    .subscriptions(String(userId))
+    .where('expiresAt', '>', dayjs().toDate())
+    .where('groupId', '==', String(groupId))
+    .get();
 
-    const subscriptions: SubscriptionType[] = snapshot.docs.map((doc) =>
-      doc.data()
-    );
+  const subscriptions: SubscriptionType[] = snapshot.docs.map((doc) =>
+    doc.data()
+  );
 
-    return subscriptions.length > 0;
-  } catch (error) {
-    Server.logger.error(
-      new Error(`Subscription find error: ${
-        error instanceof Error ? error : 'UNDEFINED'
-      }
-      `)
-    );
-    throw new Error('Cannot get subscription, user or group not found');
-  }
+  return subscriptions.length > 0;
 }
-
 /**
  * Gets all the subscriptions of a given user
  * @param userTelegramId - The telegram id of the user
+ * @param groupId - The telegram id of the group
  *
  * @returns A promise that resolves to an array of subscriptions
  *
  * @throws Error - If the query fails, normally if the user cannot be found
  */
-async function getSubscriptionsByUserId(
-  userTelegramId: bigint
+async function getSubscriptions(
+  userTelegramId: bigint,
+  groupId?: bigint
 ): Promise<SubscriptionType[]> {
-  try {
-    const snapshot = await Server.database
+  if (groupId) {
+    const doc = await Server.database
       .subscriptions(String(userTelegramId))
+      .doc(String(groupId))
       .get();
-    return snapshot.docs.map((doc) => doc.data());
-  } catch (error) {
-    Server.logger.error(
-      new Error(`Subscription find error: ${
-        error instanceof Error ? error : 'UNDEFINED'
-      }
-      `)
-    );
-    throw new Error('Cannot get subscriptions');
+
+    if (!doc.exists) throw new Error('Subscription not found');
+
+    return [doc.data()] as SubscriptionType[];
   }
+  const snapshot = await Server.database
+    .subscriptions(String(userTelegramId))
+    .get();
+
+  return snapshot.docs.map((doc) => doc.data());
 }
 
 export default {
   createSubscription,
   userHasActiveSubscription,
-  getSubscriptionsByUserId,
+  getSubscriptions,
 };
