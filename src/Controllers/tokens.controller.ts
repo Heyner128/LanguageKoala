@@ -1,15 +1,17 @@
 import dayjs from 'dayjs';
 import { v4 as uuid } from 'uuid';
 import { Message } from 'node-telegram-bot-api';
-import TokensService from '../Services/tokens.service';
-import SubscriptionsService from '../Services/subscriptions.service';
-import UsersService from '../Services/users.service';
-import Server from '../server';
+import TokensService from '../Services/tokens.service.js';
+import SubscriptionsService from '../Services/subscriptions.service.js';
+import UsersService from '../Services/users.service.js';
+import Server from '../server.js';
 import {
   FastifyReplyTypebox,
   FastifyRequestTypebox,
-} from '../Utils/types.util';
-import { CreateTokenSchema } from '../Models/tokens.dto';
+} from '../Utils/types.util.js';
+import { CreateTokenSchema } from '../Models/tokens.dto.js';
+
+const usersRedeeming: number[] = [];
 
 /**
  * This is called when the user sends the token to the bot
@@ -50,8 +52,6 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
       Server.logger.info(
         `Subscription created for group ${subscription.groupId} until ${subscription.expiresAt} `
       );
-
-      await Server.chatBot.removeTextListener(/.+/);
       return await Server.chatBot.sendMessage(
         msg.chat.id,
         `Subscripción activada correctamente, expira el ${dayjs(
@@ -60,11 +60,12 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
       );
     } catch (error) {
       Server.logger.error(new Error(`Error redeeming token ${msg.text}`));
-      await Server.chatBot.removeTextListener(/.+/);
-      return Server.chatBot.sendMessage(
+      return await Server.chatBot.sendMessage(
         msg.chat.id,
         'No se pudo activar la subscripción'
       );
+    } finally {
+      await Server.chatBot.removeTextListener(/.+/);
     }
   }
   const error = new Error(
@@ -82,8 +83,12 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
  *
  * @throws Error if the message object is not valid
  */
-async function redeemToken(msg: Message): Promise<Message> {
+async function redeemToken(msg: Message): Promise<Message | boolean> {
+  if (usersRedeeming.includes(msg.chat.id)) return false;
+
   if (msg.chat.id && msg.text) {
+    usersRedeeming.push(msg.chat.id);
+
     await Server.chatBot.sendMessage(
       msg.chat.id,
       'Escribe el código de la subscripción'
@@ -97,6 +102,8 @@ async function redeemToken(msg: Message): Promise<Message> {
           resolve(redeemTokenListener(msgCB));
         } catch (error) {
           reject(error);
+        } finally {
+          usersRedeeming.splice(usersRedeeming.indexOf(msg.chat.id), 1);
         }
       });
     });

@@ -1,5 +1,5 @@
 import { Static, Type } from '@sinclair/typebox';
-import { Error } from '../Utils/types.util';
+import { Error } from '../Utils/types.util.js';
 
 /**
  * The token TypeBox for request and reply validation

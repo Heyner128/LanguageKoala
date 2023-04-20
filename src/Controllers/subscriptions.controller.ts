@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { Message } from 'node-telegram-bot-api';
-import Server from '../server';
-import GroupsService from '../Services/groups.service';
-import SubscriptionsService from '../Services/subscriptions.service';
-import { SubscriptionType } from '../Models/subscription.dto';
+import Server from '../server.js';
+import GroupsService from '../Services/groups.service.js';
+import SubscriptionsService from '../Services/subscriptions.service.js';
+import { SubscriptionType } from '../Models/subscription.dto.js';
 
 /**
  * Parses a subscription to a string

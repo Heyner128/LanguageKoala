@@ -1,7 +1,7 @@
 import { WriteResult } from '@google-cloud/firestore';
 import dayjs from 'dayjs';
-import { SubscriptionType } from '../Models/subscription.dto';
-import Server from '../server';
+import { SubscriptionType } from '../Models/subscription.dto.js';
+import Server from '../server.js';
 
 /**
  * Creates a subscription in the db

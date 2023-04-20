@@ -3,11 +3,11 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import { createLogger, format, transports } from 'winston';
-import DBUtils from './Utils/database.util';
-import { UserType } from './Models/users.dto';
-import { SubscriptionType } from './Models/subscription.dto';
-import { TokenType } from './Models/tokens.dto';
-import { GroupType } from './Models/groups.dto';
+import DBUtils from './Utils/database.util.js';
+import { UserType } from './Models/users.dto.js';
+import { SubscriptionType } from './Models/subscription.dto.js';
+import { TokenType } from './Models/tokens.dto.js';
+import { GroupType } from './Models/groups.dto.js';
 
 dotenv.config();
 

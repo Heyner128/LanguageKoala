@@ -1,5 +1,5 @@
-import Server from '../server';
-import UsersController from '../Controllers/users.controller';
+import Server from '../server.js';
+import UsersController from '../Controllers/users.controller.js';
 
 /**
  * Adds the users routes

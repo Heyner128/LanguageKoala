@@ -1,6 +1,6 @@
 import { WriteResult } from '@google-cloud/firestore';
-import Server from '../server';
-import { TokenType } from '../Models/tokens.dto';
+import Server from '../server.js';
+import { TokenType } from '../Models/tokens.dto.js';
 
 /**
  * Creates a token in the db

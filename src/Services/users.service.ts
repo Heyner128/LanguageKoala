@@ -1,6 +1,6 @@
 import { WriteResult } from '@google-cloud/firestore';
-import { UserType } from '../Models/users.dto';
-import Server from '../server';
+import { UserType } from '../Models/users.dto.js';
+import Server from '../server.js';
 
 /**
  * Creates a user in the db

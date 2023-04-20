@@ -1,8 +1,8 @@
 import { Message, CallbackQuery } from 'node-telegram-bot-api';
-import SubscriptionsController from './subscriptions.controller';
-import TokensController from './tokens.controller';
-import CommandsUtil, { Command } from '../Utils/commands.util';
-import Server from '../server';
+import SubscriptionsController from './subscriptions.controller.js';
+import TokensController from './tokens.controller.js';
+import CommandsUtil, { Command } from '../Utils/commands.util.js';
+import Server from '../server.js';
 
 /**
  * The command list to be sent to the user as buttons

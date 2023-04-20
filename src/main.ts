@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
-import GroupsRouter from './Routes/groups.route';
-import UsersRouter from './Routes/users.route';
-import TokensRouter from './Routes/tokens.route';
-import Server from './server';
+import GroupsRouter from './Routes/groups.route.js';
+import UsersRouter from './Routes/users.route.js';
+import TokensRouter from './Routes/tokens.route.js';
+import Server from './server.js';
 
 dotenv.config();
 
@@ -27,10 +27,15 @@ async function start() {
   });
 
   try {
-    const PORT = !Number.isNaN(Number(process.env.PORT))
+    const IS_GOOGLE_CLOUD_RUN = process.env.K_SERVICE !== undefined;
+
+    const port = !Number.isNaN(Number(process.env.PORT))
       ? Number(process.env.PORT)
       : 3000;
-    await Server.httpServer.listen({ port: PORT });
+
+    const host = IS_GOOGLE_CLOUD_RUN ? '0.0.0.0' : undefined;
+
+    await Server.httpServer.listen({ port, host });
   } catch (error) {
     Server.logger.error(
       new Error(`

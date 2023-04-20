@@ -1,8 +1,8 @@
-import { GetGroupsSchema, GroupType } from '../Models/groups.dto';
-import GroupsController from '../Controllers/groups.controller';
-import Server from '../server';
-import HelperFunctions from '../Utils/functions.util';
-import { ApiHeaders } from '../Utils/types.util';
+import { GetGroupsSchema, GroupType } from '../Models/groups.dto.js';
+import GroupsController from '../Controllers/groups.controller.js';
+import Server from '../server.js';
+import HelperFunctions from '../Utils/functions.util.js';
+import { ApiHeaders } from '../Utils/types.util.js';
 
 /**
  * Adds the groups routes, and adds the hooks of pre-validation and validation to fastify

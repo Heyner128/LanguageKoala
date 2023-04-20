@@ -1,4 +1,4 @@
-import { SubscriptionType } from './subscription.dto';
+import { SubscriptionType } from './subscription.dto.js';
 
 export type UserType = {
   telegramId: string;

@@ -1,13 +1,13 @@
 import TelegramBot from 'node-telegram-bot-api';
-import SubscriptionsService from '../Services/subscriptions.service';
-import GroupsService from '../Services/groups.service';
+import SubscriptionsService from '../Services/subscriptions.service.js';
+import GroupsService from '../Services/groups.service.js';
 import {
   FastifyReplyTypebox,
   FastifyRequestTypebox,
-} from '../Utils/types.util';
-import HelperFunctions from '../Utils/functions.util';
-import Server from '../server';
-import { GetGroupsSchema } from '../Models/groups.dto';
+} from '../Utils/types.util.js';
+import HelperFunctions from '../Utils/functions.util.js';
+import Server from '../server.js';
+import { GetGroupsSchema } from '../Models/groups.dto.js';
 
 const VALIDATION_TIMEOUT_IN_MINUTES: number = 5;
 

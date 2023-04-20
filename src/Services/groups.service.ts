@@ -1,6 +1,6 @@
 import { WriteResult } from '@google-cloud/firestore';
-import Server from '../server';
-import { GroupType } from '../Models/groups.dto';
+import Server from '../server.js';
+import { GroupType } from '../Models/groups.dto.js';
 
 /**
  * Creates a group in the db
@@ -47,7 +47,13 @@ async function getGroups(groupId?: bigint): Promise<GroupType[]> {
   const snapshot = await Server.database.groups.get();
   const docs =
     groupId !== undefined
-      ? snapshot.docs.filter((doc) => doc.id === String(groupId))
+      ? snapshot.docs.filter(
+          (
+            doc: FirebaseFirestore.QueryDocumentSnapshot<
+              Partial<Partial<GroupType>>
+            >
+          ) => doc.id === String(groupId)
+        )
       : snapshot.docs;
 
   if (docs.length === 0) {
