@@ -16,6 +16,7 @@ async function createUser(
   name: string
 ): Promise<WriteResult> {
   return Server.database.users.doc(String(telegramId)).set({
+    telegramId: String(telegramId),
     name,
   });
 }

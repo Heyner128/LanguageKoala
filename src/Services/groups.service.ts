@@ -17,6 +17,7 @@ async function createGroup(
   name: string
 ): Promise<WriteResult> {
   return Server.database.groups.doc(String(telegramId)).set({
+    telegramId: String(telegramId),
     name,
   });
 }

@@ -1,8 +1,11 @@
+import * as dotenv from 'dotenv';
 import { Firestore, PartialWithFieldValue } from '@google-cloud/firestore';
+
+dotenv.config();
 
 const firestore = new Firestore({
   projectId: process.env.GCP_PROJECT_ID,
-  keyFilename: process.env.GCP_KEY_PATH,
+  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 });
 
 const converter = <T>() => ({

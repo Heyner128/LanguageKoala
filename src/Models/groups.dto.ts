@@ -5,6 +5,7 @@ import { Error } from '../Utils/types.util';
  * The groups TypeBox for request and reply validation
  */
 export const Group = Type.Object({
+  telegramId: Type.String(),
   name: Type.String(),
 });
 
