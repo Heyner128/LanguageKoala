@@ -57,7 +57,7 @@ async function getGroups(groupId?: bigint): Promise<GroupType[]> {
       : snapshot.docs;
 
   if (docs.length === 0) {
-    throw new Error('Group not found');
+    throw new Error('Group(s) not found');
   }
 
   return docs.map((doc) => doc.data());
