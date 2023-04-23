@@ -147,9 +147,7 @@ async function createToken(
   } catch (error) {
     Server.logger.error(new Error(`Error creating token`));
     reply.status(500).send({
-      message: `Cannot create token, Error: ${
-        error instanceof Error ? error?.message : String(error)
-      }`,
+      message: `${error instanceof Error ? error?.message : String(error)}`,
     });
   }
 }

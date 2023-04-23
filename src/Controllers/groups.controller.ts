@@ -33,9 +33,7 @@ async function getGroups(
       )
     );
     reply.status(500).send({
-      message: `Cannot get groups, Error: ${
-        error instanceof Error ? error?.message : String(error)
-      }`,
+      message: `${error instanceof Error ? error?.message : String(error)}`,
     });
   }
 }
