@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
@@ -8,8 +7,6 @@ import { UserType } from './Models/users.dto.js';
 import { SubscriptionType } from './Models/subscription.dto.js';
 import { TokenType } from './Models/tokens.dto.js';
 import { GroupType } from './Models/groups.dto.js';
-
-dotenv.config();
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>

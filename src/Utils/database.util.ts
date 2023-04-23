@@ -1,7 +1,4 @@
-import * as dotenv from 'dotenv';
 import { Firestore, PartialWithFieldValue } from '@google-cloud/firestore';
-
-dotenv.config();
 
 const firestore = new Firestore({
   projectId: process.env.GCP_PROJECT_ID,

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/main.js",
-    "start:dev": "nodemon --exec ts-node --esm src/main.ts",
+    "start:dev": "nodemon --exec ts-node --require dotenv/config --esm src/main.ts",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --ext .ts src --fix",
     "gcloud:emulator": "gcloud emulators firestore start --host-port=localhost:9000"

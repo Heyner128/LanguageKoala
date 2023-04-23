@@ -1,10 +1,7 @@
-import * as dotenv from 'dotenv';
 import GroupsRouter from './Routes/groups.route.js';
 import UsersRouter from './Routes/users.route.js';
 import TokensRouter from './Routes/tokens.route.js';
 import Server from './server.js';
-
-dotenv.config();
 
 async function start() {
   GroupsRouter.init();
