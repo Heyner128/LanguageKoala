@@ -156,7 +156,7 @@ function newMembers(msg: TelegramBot.Message) {
             return;
           }
 
-          await Server.chatBot.banChatMember(msg.chat.id, String(newMember.id));
+          await Server.chatBot.banChatMember(msg.chat.id, newMember.id);
           await Server.chatBot.sendMessage(
             msg.chat.id,
             `${newMember.first_name} Baneado! Razon: No tiene una suscripcion activa.`
@@ -189,7 +189,7 @@ async function leftMember(msg: TelegramBot.Message) {
       );
       await Server.chatBot.unbanChatMember(
         msg.chat.id,
-        String(msg.left_chat_member.id)
+        msg.left_chat_member.id
       );
       Server.logger.info(
         `User ${msg.left_chat_member.id} unbanned from group ${msg.chat.id}`
