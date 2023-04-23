@@ -23,8 +23,9 @@ const logger = createLogger({
     logTextFormat
   ),
   transports: [
-    new transports.File({ filename: './logs/error.log', level: 'error' }),
-    new transports.File({ filename: './logs/combined.log' }),
+    new transports.Console({
+      format: format.combine(format.colorize(), logTextFormat),
+    }),
   ],
 });
 
@@ -41,12 +42,6 @@ const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
 const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
 
 if (process.env.NODE_ENV !== 'production') {
-  // enables console logging in development
-  logger.add(
-    new transports.Console({
-      format: format.combine(format.colorize(), logTextFormat),
-    })
-  );
   // enables polling in development
   await chatBot.startPolling();
 } else {
