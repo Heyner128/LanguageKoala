@@ -30,7 +30,7 @@ async function start() {
       ? Number(process.env.PORT)
       : 3000;
 
-    const host = IS_GOOGLE_CLOUD_RUN ? '0.0.0.0' : undefined;
+    const host = IS_GOOGLE_CLOUD_RUN ? '0.0.0.0' : '127.0.0.1';
 
     await Server.httpServer.listen({ port, host });
   } catch (error) {

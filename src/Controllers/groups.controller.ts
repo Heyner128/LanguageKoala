@@ -23,7 +23,7 @@ async function getGroups(
   try {
     // Here does string casting because Typebox 2.5.9 does not support BigInt
     const groups = await GroupsService.getGroups();
-    reply.status(200).send(groups);
+    reply.status(200).send();
   } catch (error) {
     Server.logger.error(
       new Error(

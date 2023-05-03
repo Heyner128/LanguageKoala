@@ -5,7 +5,7 @@ import { Error } from '../Utils/types.util.js';
  * The token TypeBox for request and reply validation
  */
 export const Token = Type.Object({
-  token: Type.Optional(Type.String()),
+  tokenId: Type.String(),
   groupId: Type.String(),
   subscriptionDurationInDays: Type.Number(),
   redeemed: Type.Optional(Type.Boolean()),

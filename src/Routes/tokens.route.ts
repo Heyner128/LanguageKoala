@@ -18,8 +18,9 @@ function init() {
       schema: CreateTokenSchema,
       preValidation: HelperFunctions.apiKeyPreValidation,
     },
-    TokensController.createToken
+    TokensController.createTokenRouteHandler
   );
+
   Server.logger.info('Tokens routes initialized');
 }
 

@@ -13,11 +13,11 @@ import { GroupType } from '../Models/groups.dto.js';
  * @throws Error - If the group cannot be created
  */
 async function createGroup(
-  telegramId: bigint,
+  groupId: bigint,
   name: string
 ): Promise<WriteResult> {
-  return Server.database.groups.doc(String(telegramId)).set({
-    telegramId: String(telegramId),
+  return Server.database.groups.doc(String(groupId)).set({
+    groupId: String(groupId),
     name,
   });
 }
@@ -43,24 +43,18 @@ async function deleteGroup(groupId: bigint): Promise<WriteResult> {
  *
  * @throws Error - If the group cannot be found
  */
-async function getGroups(groupId?: bigint): Promise<GroupType[]> {
-  const snapshot = await Server.database.groups.get();
-  const docs =
-    groupId !== undefined
-      ? snapshot.docs.filter(
-          (
-            doc: FirebaseFirestore.QueryDocumentSnapshot<
-              Partial<Partial<GroupType>>
-            >
-          ) => doc.id === String(groupId)
-        )
-      : snapshot.docs;
+async function getGroups(groupId?: bigint): Promise<GroupType[] | GroupType> {
+  const snapshot = await (groupId
+    ? Server.database.groups.where('groupId', '==', String(groupId)).get()
+    : Server.database.groups.get());
 
-  if (docs.length === 0) {
+  const results = snapshot.docs.map((doc) => doc.data());
+
+  if (results.length === 0) {
     throw new Error('Group(s) not found');
   }
 
-  return docs.map((doc) => doc.data());
+  return results.length === 1 ? results[0] : results;
 }
 
 export default { getGroups, createGroup, deleteGroup };

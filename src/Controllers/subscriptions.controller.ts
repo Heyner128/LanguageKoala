@@ -21,12 +21,10 @@ async function parseSubscription(
     status = 'Expirada';
   }
 
-  const groups = await GroupsService.getGroups(subscription.groupId);
+  const group = await GroupsService.getGroups(subscription.groupId);
 
   return `
-    Grupo: ${
-      groups && groups.length > 0 ? groups[0].name : 'Grupo no encontrado'
-    }
+    Grupo: ${!(group instanceof Array) ? group : 'Grupo no encontrado'}
     Valida hasta: ${dayjs(subscription.expiresAt).format('DD/MM/YYYY')}
     Estado: ${status}
   `;

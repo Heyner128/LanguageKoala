@@ -3,11 +3,12 @@ import SubscriptionsController from './subscriptions.controller.js';
 import TokensController from './tokens.controller.js';
 import CommandsUtil, { Command } from '../Utils/commands.util.js';
 import Server from '../server.js';
+import tokensController from './tokens.controller.js';
 
 /**
  * The command list to be sent to the user as buttons
  */
-const commands: Command[] = [
+const userCommands: Command[] = [
   {
     description: 'Mis subscripciones',
     handler: SubscriptionsController.sendUserSubscriptions,
@@ -17,6 +18,22 @@ const commands: Command[] = [
     description: 'Activar subscripcion',
     handler: TokensController.redeemToken,
     resendCommands: 'back',
+  },
+  {
+    description: 'Generar token',
+    handler: tokensController.createToken,
+  },
+];
+
+/**
+ * The command list to send to the admins as buttons
+ */
+
+const adminCommands: Command[] = [
+  {
+    description: 'Generar token',
+    handler: tokensController.createToken,
+    resendCommands: 'same',
   },
 ];
 
@@ -40,7 +57,7 @@ async function start(msg: Message) {
     msg.from?.first_name ? msg.from.first_name : 'Pepito perez'
   }! Estas son las opciones disponibles:`;
   await Server.chatBot.sendMessage(chatId, message, {
-    reply_markup: CommandsUtil.commandsReplyMarkup(commands),
+    reply_markup: CommandsUtil.commandsReplyMarkup(userCommands),
   });
   Server.logger.info(`Commands sent to user ${chatId}`);
 }
@@ -56,7 +73,7 @@ async function start(msg: Message) {
  * @returns A promise that resolves to the message sent
  */
 function callbackQuery(msg: CallbackQuery) {
-  const command = commands[Number(msg.data)];
+  const command = userCommands[Number(msg.data)];
   if (command) {
     command.handler(msg.message as Message).then((sentMessage) => {
       if (
@@ -64,7 +81,7 @@ function callbackQuery(msg: CallbackQuery) {
         typeof sentMessage !== 'boolean'
       ) {
         return Server.chatBot.editMessageReplyMarkup(
-          CommandsUtil.commandsReplyMarkup(commands),
+          CommandsUtil.commandsReplyMarkup(userCommands),
           {
             chat_id: sentMessage.chat.id,
             message_id: sentMessage.message_id,

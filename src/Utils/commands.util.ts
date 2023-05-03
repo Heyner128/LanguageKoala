@@ -3,7 +3,7 @@ import { Message, InlineKeyboardMarkup } from 'node-telegram-bot-api';
 export type Command = {
   description: string;
   handler: (msg: Message) => Promise<Message | boolean>;
-  resendCommands: 'same' | 'back';
+  resendCommands?: 'same' | 'back';
 };
 
 /**

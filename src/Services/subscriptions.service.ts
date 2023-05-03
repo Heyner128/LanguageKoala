@@ -23,6 +23,8 @@ async function createSubscription(
     .collection('subscriptions')
     .doc(String(groupTelegramId))
     .set({
+      userId: userTelegramId,
+      groupId: groupTelegramId,
       expiresAt,
     });
 }
@@ -66,14 +68,15 @@ async function getSubscriptions(
   groupId?: bigint
 ): Promise<SubscriptionType[]> {
   if (groupId) {
-    const doc = await Server.database
+    const snapshot = await Server.database
       .subscriptions(String(userTelegramId))
-      .doc(String(groupId))
+      .orderBy('expiresAt', 'desc')
+      .where('groupId', '==', String(groupId))
       .get();
 
-    if (!doc.exists) throw new Error('Subscription not found');
+    if (snapshot.size === 0) throw new Error('Subscription not found');
 
-    return [doc.data()] as SubscriptionType[];
+    return snapshot.docs.map((doc) => doc.data());
   }
   const snapshot = await Server.database
     .subscriptions(String(userTelegramId))

@@ -6,6 +6,7 @@ import Server from '../server.js';
  * Creates a user in the db
  * @param telegramId - The telegram id of the user
  * @param name - The name of the user
+ * @param isAdmin - Whether the user is an admin or not
  *
  * @returns A promise that resolves to the write result
  *
@@ -13,11 +14,13 @@ import Server from '../server.js';
  */
 async function createUser(
   telegramId: bigint,
-  name: string
+  name: string,
+  isAdmin: boolean = false
 ): Promise<WriteResult> {
   return Server.database.users.doc(String(telegramId)).set({
     telegramId: String(telegramId),
     name,
+    isAdmin,
   });
 }
 
