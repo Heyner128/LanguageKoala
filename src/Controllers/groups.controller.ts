@@ -8,6 +8,7 @@ import {
 import HelperFunctions from '../Utils/functions.util.js';
 import Server from '../server.js';
 import { GetGroupsSchema } from '../Models/groups.dto.js';
+import UsersService from '../Services/users.service.js';
 
 const VALIDATION_TIMEOUT_IN_MINUTES: number = 5;
 
@@ -22,7 +23,7 @@ async function getGroups(
 ) {
   try {
     // Here does string casting because Typebox 2.5.9 does not support BigInt
-    const groups = await GroupsService.getGroups();
+    await GroupsService.getGroups();
     reply.status(200).send();
   } catch (error) {
     Server.logger.error(
@@ -91,8 +92,8 @@ async function botMembershipUpdate(
 
 /**
  * Handles the new members in the group, if the new member is not the bot, it checks if the user has a valid subscription
- * if it does, it sends a welcome message, if it doesn't, it sends a message to validate the subscription and if the user
- * doesn't validate it in a given time kicks the user from the group
+ * if it does, it sends a welcome message, if it doesn't or if the user is flagged as admin, it sends a message to
+ * validate the subscription and if the user doesn't validate it in a given time kicks the user from the group
  * @param msg - The message object
  */
 function newMembers(msg: TelegramBot.Message) {
@@ -111,6 +112,8 @@ function newMembers(msg: TelegramBot.Message) {
             BigInt(msg.chat.id)
           );
 
+        const isAdmin = await UsersService.userIsAdmin(BigInt(newMember.id));
+
         if (hasSubscription) {
           await Server.chatBot.sendMessage(
             msg.chat.id,
@@ -120,7 +123,7 @@ function newMembers(msg: TelegramBot.Message) {
           Server.logger.info(
             `User ${newMember.first_name} joined group ${msg.chat.id}`
           );
-        } else if (!hasSubscription && !newMember.is_bot) {
+        } else if (!hasSubscription && !newMember.is_bot && !isAdmin) {
           await Server.chatBot.sendMessage(
             msg.chat.id,
             `Bienvenido ${newMember.first_name} por favor valida tu suscripción presionando el botón`,

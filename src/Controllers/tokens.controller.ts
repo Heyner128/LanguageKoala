@@ -1,22 +1,21 @@
 import dayjs from 'dayjs';
 import { Message } from 'node-telegram-bot-api';
-import { v4 as uuid } from 'uuid';
 import TokensService from '../Services/tokens.service.js';
 import SubscriptionsService from '../Services/subscriptions.service.js';
 import UsersService from '../Services/users.service.js';
-import Server from '../server.js';
+import Server, { ADMIN_COMMANDS_IDS } from '../server.js';
 import {
   FastifyReplyTypebox,
   FastifyRequestTypebox,
 } from '../Utils/types.util.js';
 import { CreateTokenSchema } from '../Models/tokens.dto.js';
+import CommandsUtil from '../Utils/commands.util.js';
 
 const usersRedeeming: number[] = [];
 
-let isAwaitingResponse: boolean = false;
-
 /**
- * This is called when the user sends the token to the bot
+ * Callback when the user sends the token to the bot
+ *
  * @param msg - The message object
  *
  * @returns A promise that resolves with the validation message
@@ -26,6 +25,8 @@ let isAwaitingResponse: boolean = false;
 async function redeemTokenListener(msg: Message): Promise<Message> {
   if (msg.chat.id && msg.text) {
     try {
+      await Server.chatBot.removeTextListener(/.+/);
+
       await TokensService.redeemToken(msg.text);
       Server.logger.info(
         `${msg.chat?.id ?? 'NO_SENDER_ID'} redeemed token ${msg.text}`
@@ -33,10 +34,7 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
 
       const token = await TokensService.getTokenById(msg.text);
 
-      await UsersService.createUser(
-        BigInt(msg.chat.id),
-        msg.chat.first_name ?? 'NO_NAME'
-      );
+      await UsersService.createUser(BigInt(msg.chat.id));
 
       await SubscriptionsService.createSubscription(
         BigInt(msg.chat.id),
@@ -66,8 +64,6 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
         msg.chat.id,
         'No se pudo activar la subscripción'
       );
-    } finally {
-      await Server.chatBot.removeTextListener(/.+/);
     }
   }
   const error = new Error(
@@ -79,6 +75,7 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
 
 /**
  * Sends a message requesting the token to the user and returns a promise that resolves when the token is redeemed
+ *
  * @param msg - The message object
  *
  * @returns A promise that resolves when the token is redeemed
@@ -91,12 +88,12 @@ async function redeemToken(msg: Message): Promise<Message | boolean> {
   if (msg.chat.id && msg.text) {
     usersRedeeming.push(msg.chat.id);
 
+    Server.logger.info(`Token requested to user ${msg.chat.id}`);
+
     await Server.chatBot.sendMessage(
       msg.chat.id,
       'Escribe el código de la subscripción'
     );
-
-    Server.logger.info(`Token requested to user ${msg.chat.id}`);
 
     return new Promise((resolve, reject) => {
       Server.chatBot.onText(/.+/, (msgCB: Message) => {
@@ -118,16 +115,68 @@ async function redeemToken(msg: Message): Promise<Message | boolean> {
 }
 
 /**
+ * Callback when the user/admin selects the group to create the token
+ * @param msg - The message object
+ */
+async function createTokenListener(msg: Message) {
+  try {
+    if (
+      msg.chat_shared &&
+      msg.chat_shared.request_id === ADMIN_COMMANDS_IDS.createToken
+    ) {
+      const token = await TokensService.createToken(
+        BigInt(msg.chat_shared.chat_id),
+        30
+      );
+      Server.logger.info(
+        `Token ${token.tokenId} created for group ${token.groupId}`
+      );
+      await Server.chatBot.sendMessage(
+        msg.chat.id,
+        `Token creado correctamente: ${token.tokenId}`,
+        {
+          reply_markup: CommandsUtil.commandsReplyMarkup(
+            [
+              {
+                id: 4,
+                description: 'Volver',
+                handler: () => Promise.resolve(true),
+                resendCommands: 'same',
+              },
+            ],
+            await UsersService.userIsAdmin(BigInt(msg.chat.id))
+          ),
+        }
+      );
+    }
+  } catch (error) {
+    Server.logger.error(new Error(`Error creating token ${msg.text}`));
+    await Server.chatBot.sendMessage(msg.chat.id, 'No se pudo crear el token', {
+      reply_markup: CommandsUtil.commandsReplyMarkup(
+        [
+          {
+            id: 4,
+            description: 'Volver',
+            handler: () => Promise.resolve(true),
+            resendCommands: 'same',
+          },
+        ],
+        await UsersService.userIsAdmin(BigInt(msg.chat.id))
+      ),
+    });
+  }
+}
+
+/**
  * Handles the token creation on the chatbot
  *
  * @param msg - The message object
  *
  * @returns A promise that resolves with the validation message
  */
-// eslint-disable-next-line consistent-return
 async function createToken(msg: Message): Promise<Message | boolean> {
-  if (msg.chat.id && msg.text && !isAwaitingResponse) {
-    const awaitMessage = await Server.chatBot.sendMessage(
+  if (msg.chat.id && msg.text) {
+    await Server.chatBot.sendMessage(
       msg.chat.id,
       'El token se esta generando, selecciona el grupo',
       {
@@ -137,46 +186,16 @@ async function createToken(msg: Message): Promise<Message | boolean> {
               {
                 text: 'Seleccionar grupo',
                 request_chat: {
-                  request_id: 0,
+                  request_id: ADMIN_COMMANDS_IDS.createToken,
                   chat_is_channel: false,
                 },
               },
             ],
           ],
+          one_time_keyboard: true,
         },
       }
     );
-
-    isAwaitingResponse = true;
-
-    return new Promise((resolve, reject) => {
-      Server.chatBot.on('message', async (cbMsg) => {
-        try {
-          if (cbMsg.chat_shared && isAwaitingResponse) {
-            const token = await TokensService.createToken(
-              BigInt(cbMsg.chat_shared.chat_id),
-              30
-            );
-            Server.logger.info(
-              `Token ${token.tokenId} created for group ${token.groupId}`
-            );
-            isAwaitingResponse = false;
-            resolve(
-              Server.chatBot.sendMessage(
-                awaitMessage.chat.id,
-                `Token creado correctamente: ${token.tokenId}`
-              )
-            );
-          }
-        } catch (error) {
-          Server.logger.error(new Error(`Error creating token ${msg.text}`));
-          await Server.chatBot.sendMessage(
-            awaitMessage.chat.id,
-            'No se pudo crear el token'
-          );
-        }
-      });
-    });
   }
   return false;
 }
@@ -213,4 +232,9 @@ async function createTokenRouteHandler(
   }
 }
 
-export default { redeemToken, createTokenRouteHandler, createToken };
+export default {
+  redeemToken,
+  createTokenRouteHandler,
+  createToken,
+  createTokenListener,
+};

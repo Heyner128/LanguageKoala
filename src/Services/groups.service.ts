@@ -5,12 +5,10 @@ import { GroupType } from '../Models/groups.dto.js';
 /**
  * Creates a group in the db
  *
- * @param telegramId - The telegram id of the group
+ * @param groupId - The telegram id of the group
  * @param name - The name of the group
  *
  * @returns A promise that resolves to the write result
- *
- * @throws Error - If the group cannot be created
  */
 async function createGroup(
   groupId: bigint,
@@ -27,8 +25,6 @@ async function createGroup(
  * @param groupId - The telegram id of the group
  *
  * @returns A promise that resolves to the write result
- *
- * @throws Error - If the group cannot be found
  */
 async function deleteGroup(groupId: bigint): Promise<WriteResult> {
   return Server.database.groups.doc(String(groupId)).delete();

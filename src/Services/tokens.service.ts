@@ -24,8 +24,6 @@ async function getTokenById(token: string): Promise<TokenType> {
  * @param subscriptionDurationInDays - The duration of the subscription
  *
  * @returns A promise that resolves to the write result
- *
- * @throws Error - If the token cannot be created
  */
 async function createToken(
   groupId: bigint,
@@ -50,8 +48,6 @@ async function createToken(
  * @param token - The token to redeem
  *
  * @returns A promise that resolves to the write result
- *
- * @throws Error - If the token cannot be found
  */
 async function redeemToken(token: string): Promise<WriteResult> {
   return Server.database.tokens.doc(token).update({

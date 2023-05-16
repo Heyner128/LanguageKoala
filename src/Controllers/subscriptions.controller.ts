@@ -32,6 +32,7 @@ async function parseSubscription(
 
 /**
  * Sends the user his subscriptions on a single message
+ *
  * @param msg - The message object
  *
  * @returns A promise that resolves with the message object

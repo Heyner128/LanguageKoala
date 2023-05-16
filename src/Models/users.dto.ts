@@ -1,8 +1,10 @@
 import { SubscriptionType } from './subscription.dto.js';
 
+/**
+ * Type for firestore queries validation
+ */
 export type UserType = {
-  telegramId: string;
-  name: string;
-  isAdmin?: boolean;
+  userId: string;
+  isAdmin: boolean;
   subscriptions?: SubscriptionType[];
 };

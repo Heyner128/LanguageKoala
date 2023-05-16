@@ -21,6 +21,8 @@ function init() {
     TokensController.createTokenRouteHandler
   );
 
+  Server.chatBot.on('message', TokensController.createTokenListener);
+
   Server.logger.info('Tokens routes initialized');
 }
 

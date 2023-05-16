@@ -1,5 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
+/**
+ * This function is used to delay the execution of a function
+ * @param ms - the number of milliseconds to delay
+ */
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);

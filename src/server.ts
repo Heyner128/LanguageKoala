@@ -8,6 +8,11 @@ import { SubscriptionType } from './Models/subscription.dto.js';
 import { TokenType } from './Models/tokens.dto.js';
 import { GroupType } from './Models/groups.dto.js';
 
+export const ADMIN_COMMANDS_IDS = {
+  createToken: 0,
+  createAdmin: 1,
+};
+
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
     `${timestamp} ${level}: ${stack || message}`
@@ -41,6 +46,7 @@ const chatBot = new TelegramBot(process.env.BOT_TOKEN ?? '');
 
 const httpServer = fastify().withTypeProvider<TypeBoxTypeProvider>();
 
+// In prod sets a webhook, in dev starts polling
 if (process.env.NODE_ENV !== 'production') {
   // enables polling in development
   await chatBot.startPolling();
