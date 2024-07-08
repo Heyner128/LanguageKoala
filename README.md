@@ -1,7 +1,17 @@
-# FrancesToxicoBot
-A telegram bot for frances toxico project
+# Language Learning Premium bot
+
+A Telegram bot to manage premium subscribers on a language learning service
+
+## Installation
+
+- Create a .env file with the variables on the example.env file
+- Run the command `npm install`
+- Run the comment `npm run start`
+
+To run in dev mode use `npm run start:dev`
 
 
-## Install notes
+## Licence
 
-The code is made to be run in GCP cloud run and the environment variables listed in the file example.env should be set, for security reasons they're not set in the Dockerfile 
+MIT
+
