@@ -1,9 +1,9 @@
 
 
-<div style="display: flex;flex-direction: column; width: 100%; align-items: center; padding: 30px; gap: 30px">
-<h1>Language Koala Telegram Premium Bot</h1>
+# Language Koala Telegram Premium Bot
+<br />
 <img src="https://www.svgrepo.com/show/49930/koala.svg" height="200" alt='koala image'/>
-</div>
+<br />
 
 A Telegram bot to manage premium subscribers on a language learning service
 
